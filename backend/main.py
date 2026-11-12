@@ -216,7 +216,7 @@ def _generate_answer(prompt: str) -> str:
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.4,
-            max_output_tokens=512,
+            max_output_tokens=1024,
         ),
     )
     return response.text
