@@ -155,7 +155,30 @@ Felhasználói kérdés
 
 **Fájl:** `frontend/` mappa (Vite + React + Tailwind CSS)
 
-*(Részletek a Fázis 2.2 befejezésekor kerülnek ide)*
+**Komponensek:**
+- `App.jsx` – fő chat logika (fetch, üzenetlista, scroll, hibaállapot)
+- `ChatMessage.jsx` – user/assistant chat buborékok, egyszerű markdown render
+- `SourceCard.jsx` – RAG forrás kártyák (kategória ikon, similarity %, leírás)
+- `LoadingDots.jsx` – pattogó betöltő animáció
+
+**CORS:** a backend `main.py`-ban engedélyezve: `http://localhost:5173` és `https://*.vercel.app`
+
+---
+
+### 2.3 – Forrás kártyák + RAG debug
+
+**Dátum:** 2026-11-12
+
+**SourceCard.jsx újraírva:**
+- 11 kategória egyedi emoji ikonnal és színes badge-dzsel
+- Hover: `shadow-lg`, `-translate-y-0.5`, háttér-gradient, leírás kinyílik (`line-clamp-none`)
+- Hasonlósági progress sáv (zöld/sárga/narancs/szürke küszöbök)
+- Nagy, félkövér hasonlósági % szám + szöveges minősítés (Kiváló / Jó / Részleges / Gyenge)
+
+**RAG debug (`_retrieve_locations`):**
+- `match_threshold`: `0.3 → 0.1` (extrém alacsony, debug célra)
+- `print()` logolás hozzáadva: threshold, találatszám, minden találat neve + similarity pontszáma
+- Ha nulla találat: figyelmeztetés nyomtatva a terminálba
 
 ---
 

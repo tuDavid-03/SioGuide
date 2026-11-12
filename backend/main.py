@@ -147,7 +147,7 @@ def _get_embedding(text: str) -> list[float]:
     return response.embeddings[0].values
 
 
-def _retrieve_locations(embedding: list[float], threshold: float = 0.3, count: int = 5) -> list[dict]:
+def _retrieve_locations(embedding: list[float], threshold: float = 0.1, count: int = 5) -> list[dict]:
     """Releváns helyszínek lekérése a Supabase match_locations RPC-n keresztül."""
     response = (
         _supabase_client
@@ -158,7 +158,16 @@ def _retrieve_locations(embedding: list[float], threshold: float = 0.3, count: i
         })
         .execute()
     )
-    return response.data or []
+    results = response.data or []
+
+    # DEBUG – konzolra írja a visszakapott találatokat és hasonlósági pontszámokat
+    print(f"\n[RAG DEBUG] Threshold: {threshold} | Találatok: {len(results)}")
+    for r in results:
+        print(f"  → [{r.get('similarity', 0):.4f}] {r.get('name', '?')} ({r.get('category', '?')})")
+    if not results:
+        print("  ⚠️  Nulla találat – az embedding dimenzió vagy az RPC threshold lehet a probléma.")
+
+    return results
 
 
 def _build_prompt(question: str, locations: list[dict], weather: str) -> str:
