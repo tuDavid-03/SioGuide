@@ -5,3 +5,4 @@ supabase
 google-genai
 pydantic
 pydantic-settings
+requests

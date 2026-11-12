@@ -203,3 +203,29 @@ Felhasználói kérdés
 │             │ match_locations RPC (cosine similarity)  │
 └─────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Fázis 5 – Agentic RAG, Interaktív UI és Kedvezmények 🚀
+
+### 5.1 – Adatbázis séma bővítése és Partnerkedvezmények
+
+**Dátum:** 2026-11-13
+
+- `locations` tábla kiegészítve `discount_info text DEFAULT NULL` oszloppal.
+- `match_locations` RPC frissítve, hogy a szemantikus keresés eredményében visszaadja a `discount_info` mezőt is.
+- `backend/seed.py` frissítve 6 kiemelt partnerkedvezménnyel (Pietro Pizzeria, Palace Wellness, Renegát Burger, Escape60, Vízisport Centrum, Flört Club).
+- A vektorizálási folyamat a kedvezmények leírását is beágyazza a pontosság érdekében.
+
+---
+
+### 5.2 – Gemini Function Calling & Google Maps Tool
+
+**Dátum:** 2026-11-13
+
+- `requests` modul integrálva.
+- `get_walking_distance(origin: str, destination: str) -> str` globális eszköz implementálva a Google Maps Distance Matrix API-hoz (gyalogos mód, magyar nyelv).
+- Áttérés a `google.genai` SDK `client.chats.create` metódusára.
+- Automatikus függvényhívás engedélyezve: `automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=False)`.
+- RAG kontextus dinamikusan tartalmazza a `Müller's Kedvezmény` adatokat minden lekért helyszínhez.
+
