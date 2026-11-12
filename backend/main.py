@@ -147,7 +147,7 @@ def _get_embedding(text: str) -> list[float]:
     return response.embeddings[0].values
 
 
-def _retrieve_locations(embedding: list[float], threshold: float = 0.4, count: int = 5) -> list[dict]:
+def _retrieve_locations(embedding: list[float], threshold: float = 0.3, count: int = 5) -> list[dict]:
     """Releváns helyszínek lekérése a Supabase match_locations RPC-n keresztül."""
     response = (
         _supabase_client
