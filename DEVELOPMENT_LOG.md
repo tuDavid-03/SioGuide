@@ -338,5 +338,27 @@ Felhasználói kérdés
     - Az input mező rugalmas (`flex-1 min-w-0`), kényelmes margókkal és touch targettel.
     - A forráskártyák bal margója mobilon `pl-2 sm:pl-10`-re optimalizálva, így nem veszít hasznos felületet.
 
+---
+
+### 6.6.1 – UI Takarítás & Mentett Programtervek (Kollaboratív Tervezés)
+
+**Dátum:** 2026-11-13
+
+- `frontend/src/App.jsx`:
+  - **Tech Footer törlése:** Eltávolítva a képernyő alsó részén lévő kisbetűs technológiai felsorolás a tiszta mobil és desktop élményért.
+  - **Placeholder finomhangolás:** Rövid, letisztult beviteli szöveg (`Kérdezz valamit...`, `Ask anything...`, `Frag etwas...`).
+  - **Interaktív Akció Fejléc:**
+    - `🎁 Kedvezmények` gomb gyorsgombbá alakítva: kattintásra azonnal beküldi a chatbe az ajánlatkérő promptot (*"Milyen Müller's kedvezményeink vannak?"*).
+    - `🗺️ Mentett Tervek` gomb dinamikus darabszám-jelvénnyel, amely megnyitja a mentett terveket.
+    - Eltávolítva a felesleges szöveges sallangok (pl. *"Müller's AI..."*).
+- `frontend/src/components/ChatMessage.jsx`:
+  - Minden AI válasz alá bekerült egy diszkrét `💾 Terv mentése` gyorsgomb.
+  - Mentéskor a gomb azonnal átvált `✓ Terv elmentve` állapotba, az útvonalat pedig időbélyeggel és egyedi azonosítóval a böngésző `localStorage`-ába menti.
+- `frontend/src/components/SavedPlansModal.jsx`:
+  - Új dedikált modális komponens a mentett programtervek kezelésére és kollaborációra.
+  - Formázott markdown előnézet, dátum- és időbélyeggel ellátott kártyák és egyedi törlés (`🗑️`).
+  - **Natív Web Share API (`navigator.share`):** Egy kattintással megosztható a teljes programterv barátokkal (WhatsApp, Messenger, SMS), asztali gépen pedig intelligens automatikus vágólapra másolási fallback funkcióval.
+
+
 
 

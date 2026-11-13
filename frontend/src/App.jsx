@@ -3,6 +3,7 @@ import ChatMessage from './components/ChatMessage'
 import SourceCard from './components/SourceCard'
 import LoadingDots from './components/LoadingDots'
 import PlaceModal from './components/PlaceModal'
+import SavedPlansModal from './components/SavedPlansModal'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -32,18 +33,18 @@ function detectBrowserLanguage() {
 const I18N = {
   hu: {
     welcome: "Üdvözöllek! Én vagyok a **SioGuide**, a Müller's vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy Müller's kedvezmények!",
-    placeholder: "Kérdezz valamit... (pl. Milyen messze van gyalog a Nagystrand?)",
+    placeholder: "Kérdezz valamit...",
     placeholderListening: "Beszélj most, hallgatlak...",
     send: "Küldés",
     subTitle: "Müller's Vendégházak · Agentic AI Asszisztens",
     badgeDiscounts: "Kedvezmények",
-    badgeVoice: "Hangvezérlés",
+    savedPlansButton: "Mentett Tervek",
+    quickDiscountQuery: "Milyen Müller's kedvezményeink vannak?",
     sourcesTitle: "Felhasznált helyszínek & Kedvezmények",
     sourcesHint: "Kattints a kártyára a térképért",
     listeningBar: "🎙️ Hallgatom a beszédet... Mondd el a kérdésed!",
     listeningStop: "Leállítás",
     speechNotSupported: "A böngésződ nem támogatja a beépített hangfelismerést (SpeechRecognition). Próbáld Google Chrome vagy Edge böngészőből!",
-    footerInfo: "Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps",
     splashSubtitle: "Müller's AI Concierge · Siófok",
     splashTagline: "Személyre szabott balatoni élmények & intelligens digitális asszisztens",
     splashLoading: "Asszisztens betöltése...",
@@ -52,18 +53,18 @@ const I18N = {
   },
   en: {
     welcome: "Welcome! I am **SioGuide**, the AI concierge for Müller's guesthouses. Ask me anything about Siófok – beaches, restaurants, activities, weather, walking distances, or Müller's discounts!",
-    placeholder: "Ask me anything... (e.g. How far is the Main Beach on foot?)",
+    placeholder: "Ask anything...",
     placeholderListening: "Listening, please speak now...",
     send: "Send",
     subTitle: "Müller's Guesthouses · Agentic AI Concierge",
     badgeDiscounts: "Discounts",
-    badgeVoice: "Voice Search",
+    savedPlansButton: "Saved Plans",
+    quickDiscountQuery: "What Müller's discounts do we have?",
     sourcesTitle: "Referenced Places & Partner Discounts",
     sourcesHint: "Click card for interactive map",
     listeningBar: "🎙️ Listening to speech... Ask your question!",
     listeningStop: "Stop",
     speechNotSupported: "Your browser does not support built-in speech recognition. Please try Google Chrome or Microsoft Edge!",
-    footerInfo: "Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps",
     splashSubtitle: "Müller's AI Concierge · Siófok",
     splashTagline: "Tailored Lake Balaton experiences & intelligent guest concierge",
     splashLoading: "Loading concierge...",
@@ -72,18 +73,18 @@ const I18N = {
   },
   de: {
     welcome: "Herzlich willkommen! Ich bin **SioGuide**, der KI-Concierge der Müller's Gästehäuser. Frag mich gerne nach Stränden, Restaurants, Sehenswürdigkeiten, Gehdistanzen, Wetter oder Müller's Rabatten!",
-    placeholder: "Frag mich etwas... (z. B. Wie weit ist der Hauptstrand zu Fuß?)",
+    placeholder: "Frag etwas...",
     placeholderListening: "Ich höre zu, sprich bitte...",
     send: "Senden",
     subTitle: "Müller's Gästehäuser · Agentic KI-Concierge",
     badgeDiscounts: "Rabatte",
-    badgeVoice: "Sprachsteuerung",
+    savedPlansButton: "Gespeicherte Pläne",
+    quickDiscountQuery: "Welche Müller's Rabatte gibt es?",
     sourcesTitle: "Verwendete Orte & Partner-Rabatte",
     sourcesHint: "Klicke auf die Karte für Details",
     listeningBar: "🎙️ Ich höre zu... Stelle deine Frage!",
     listeningStop: "Stopp",
-    speechNotSupported: "Dein Browser unterstützt die Spracherkennung nicht. Bitte verwende Google Chrome oder Microsoft Edge!",
-    footerInfo: "Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps",
+    speechNotSupported: "Dein Browser unterstützt die Spracherkennung nicht. Bitte verwende Google Chrome vagy Microsoft Edge!",
     splashSubtitle: "Müller's KI-Concierge · Siófok",
     splashTagline: "Maßgeschneiderte Erlebnisse am Plattensee & digitaler Concierge",
     splashLoading: "Concierge wird gestartet...",
@@ -94,11 +95,11 @@ const I18N = {
 
 export default function App() {
   // Auto-nyelvfelismerés a böngészőből
-  const [currentLang, setCurrentLang]     = useState(() => detectBrowserLanguage())
-  const t                                 = I18N[currentLang] || I18N.hu
+  const [currentLang, setCurrentLang]         = useState(() => detectBrowserLanguage())
+  const t                                     = I18N[currentLang] || I18N.hu
 
   // Üzenetek állapota az indításkori felismert nyelven
-  const [messages, setMessages]           = useState(() => [
+  const [messages, setMessages]               = useState(() => [
     {
       role: 'assistant',
       text: (I18N[detectBrowserLanguage()] || I18N.hu).welcome,
@@ -106,19 +107,33 @@ export default function App() {
     },
   ])
 
-  const [input, setInput]                 = useState('')
-  const [loading, setLoading]             = useState(false)
-  const [error, setError]                 = useState(null)
-  const [selectedPlace, setSelectedPlace] = useState(null)
-  const [isListening, setIsListening]     = useState(false)
+  const [input, setInput]                     = useState('')
+  const [loading, setLoading]                 = useState(false)
+  const [error, setError]                     = useState(null)
+  const [selectedPlace, setSelectedPlace]     = useState(null)
+  const [isListening, setIsListening]         = useState(false)
+
+  // Mentett tervek modális ablak állapota
+  const [isSavedPlansOpen, setIsSavedPlansOpen] = useState(false)
+  const [savedPlansCount, setSavedPlansCount]   = useState(0)
 
   // Splash Screen állapotok (1.6s megjelenítés + 0.6s sima fade-out)
-  const [showSplash, setShowSplash]       = useState(true)
-  const [splashFading, setSplashFading]   = useState(false)
+  const [showSplash, setShowSplash]           = useState(true)
+  const [splashFading, setSplashFading]       = useState(false)
 
-  const bottomRef                         = useRef(null)
-  const inputRef                          = useRef(null)
-  const recognitionRef                    = useRef(null)
+  const bottomRef                             = useRef(null)
+  const inputRef                              = useRef(null)
+  const recognitionRef                        = useRef(null)
+
+  // Mentett tervek darabszámának inicializálása localStorage-ból
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('sioguide_saved_plans') || '[]')
+      setSavedPlansCount(stored.length)
+    } catch {
+      setSavedPlansCount(0)
+    }
+  }, [])
 
   // Splash Screen automatikus időzített eltüntetése (Gomb nélkül)
   useEffect(() => {
@@ -152,6 +167,73 @@ export default function App() {
       }
       return prev
     })
+  }
+
+  // Terv mentése LocalStorage-ba (ChatMessage-ből hívva)
+  function handleSavePlan(planText) {
+    try {
+      const existing = JSON.parse(localStorage.getItem('sioguide_saved_plans') || '[]')
+      if (!existing.some(p => p.text === planText)) {
+        const newPlan = {
+          id: Date.now().toString(),
+          text: planText,
+          createdAt: new Date().toISOString(),
+        }
+        const updated = [newPlan, ...existing]
+        localStorage.setItem('sioguide_saved_plans', JSON.stringify(updated))
+        setSavedPlansCount(updated.length)
+      }
+      return true
+    } catch (err) {
+      console.error('Hiba a terv mentésekor:', err)
+      return false
+    }
+  }
+
+  // Kérdés beküldése az API-nak (űrlapból vagy gyorsgombból)
+  async function submitQuestion(questionText) {
+    const question = questionText.trim()
+    if (!question || loading) return
+
+    // Ha beszéd rögzítés ment, leállítjuk
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+    }
+
+    setInput('')
+    setError(null)
+    setMessages(prev => [...prev, { role: 'user', text: question, sources: [] }])
+    setLoading(true)
+
+    try {
+      const res = await fetch(`${API_URL}/ask`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ question }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data?.detail || `Szerverhiba: ${res.status}`)
+      }
+
+      const data = await res.json()
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', text: data.answer, sources: data.sources || [] },
+      ])
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+      inputRef.current?.focus()
+    }
+  }
+
+  // Gyorsgomb kezelése (pl. Kedvezmények lekérdezése)
+  function handleQuickQuestion(queryText) {
+    submitQuestion(queryText)
   }
 
   // Mikrofon / Hangfelismerés (Web Speech API)
@@ -203,45 +285,9 @@ export default function App() {
     }
   }
 
-  async function sendMessage(e) {
+  function handleFormSubmit(e) {
     e.preventDefault()
-    const question = input.trim()
-    if (!question || loading) return
-
-    // Ha beszéd rögzítés ment, leállítjuk
-    if (isListening) {
-      recognitionRef.current?.stop()
-      setIsListening(false)
-    }
-
-    setInput('')
-    setError(null)
-    setMessages(prev => [...prev, { role: 'user', text: question, sources: [] }])
-    setLoading(true)
-
-    try {
-      const res = await fetch(`${API_URL}/ask`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ question }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data?.detail || `Szerverhiba: ${res.status}`)
-      }
-
-      const data = await res.json()
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', text: data.answer, sources: data.sources || [] },
-      ])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-      inputRef.current?.focus()
-    }
+    submitQuestion(input)
   }
 
   return (
@@ -302,11 +348,11 @@ export default function App() {
       )}
 
       {/* ── Header (Reszponzív mobil + desktop) ── */}
-      <header className="py-3 sm:py-5 border-b border-lake-200 shrink-0">
-        <div className="flex items-center justify-between gap-2.5 sm:gap-3">
+      <header className="py-2.5 sm:py-4 border-b border-lake-200 shrink-0">
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
           {/* Bal oldal: Logó + Név + Rövid alcím */}
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-xs border border-lake-200 shrink-0 bg-lake-900">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden shadow-xs border border-lake-200 shrink-0 bg-lake-900">
               <img
                 src="/pwa-192x192.png"
                 alt="SioGuide"
@@ -314,17 +360,44 @@ export default function App() {
               />
             </div>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-lake-900 leading-tight truncate">
+              <h1 className="text-base sm:text-lg font-bold text-lake-900 leading-tight truncate">
                 SioGuide
               </h1>
-              <p className="text-[11px] sm:text-xs text-lake-500 truncate max-w-[170px] xs:max-w-[220px] sm:max-w-none">
+              <p className="text-[10px] sm:text-xs text-lake-500 truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none">
                 {t.subTitle}
               </p>
             </div>
           </div>
 
-          {/* Jobb oldal: Nyelvváltó + (Desktopon badge-ek) */}
+          {/* Jobb oldal: Akció gombok + Nyelvváltó */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* 🎁 Kedvezmények Gyorsgomb (Desktop) */}
+            <button
+              type="button"
+              onClick={() => handleQuickQuestion(t.quickDiscountQuery)}
+              className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-200 transition-colors shadow-xs active:scale-95 cursor-pointer"
+              title="Kérdezz rá a kedvezményekre"
+            >
+              <span>🎁</span>
+              <span>{t.badgeDiscounts}</span>
+            </button>
+
+            {/* 🗺️ Mentett Tervek Gomb (Desktop) */}
+            <button
+              type="button"
+              onClick={() => setIsSavedPlansOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-lake-100 hover:bg-lake-200 text-lake-800 border border-lake-200 transition-colors shadow-xs active:scale-95 cursor-pointer"
+              title="Mentett programtervek megtekintése"
+            >
+              <span>🗺️</span>
+              <span>{t.savedPlansButton}</span>
+              {savedPlansCount > 0 && (
+                <span className="px-1.5 py-0.2 bg-lake-600 text-white rounded-full text-[10px] font-bold">
+                  {savedPlansCount}
+                </span>
+              )}
+            </button>
+
             {/* Nyelvváltó gombok (HU / EN / DE) */}
             <div className="flex items-center bg-lake-100/80 rounded-xl p-0.5 sm:p-1 border border-lake-200/80 shadow-xs">
               {['hu', 'en', 'de'].map(l => (
@@ -332,45 +405,44 @@ export default function App() {
                   key={l}
                   type="button"
                   onClick={() => changeLanguage(l)}
-                  className={`px-1.5 sm:px-2 py-0.5 rounded-lg text-[11px] sm:text-xs font-bold uppercase transition-all ${
+                  className={`px-1.5 sm:px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase transition-all ${
                     currentLang === l
                       ? 'bg-white text-lake-800 shadow-xs scale-100'
                       : 'text-lake-600 hover:text-lake-900 opacity-70 hover:opacity-100'
                   }`}
-                  title={`Nyelv váltása: ${l.toUpperCase()}`}
+                  title={`Nyelv: ${l.toUpperCase()}`}
                 >
                   {l}
                 </button>
               ))}
             </div>
-
-            {/* Asztali nézetű jelvények */}
-            <div className="hidden md:flex items-center gap-2">
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 shadow-xs">
-                <span>🎁</span>
-                <span>{t.badgeDiscounts}</span>
-              </span>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1 shadow-xs">
-                <span>🎙️</span>
-                <span>{t.badgeVoice}</span>
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* Mobilon megjelenő kompakt státusz sáv közvetlenül a fejléc alatt */}
-        <div className="flex md:hidden items-center gap-1.5 mt-2 pt-2 border-t border-lake-100/60 overflow-x-auto no-scrollbar">
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 border border-amber-200/60 flex items-center gap-1 shrink-0">
+        {/* Mobilon megjelenő gyorsfunkció sáv: 🎁 Kedvezmények & 🗺️ Mentett Tervek */}
+        <div className="flex sm:hidden items-center gap-2 mt-2 pt-2 border-t border-lake-100/70">
+          <button
+            type="button"
+            onClick={() => handleQuickQuestion(t.quickDiscountQuery)}
+            className="flex-1 inline-flex items-center justify-center gap-1 text-[11px] font-semibold py-1.5 px-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
             <span>🎁</span>
             <span>{t.badgeDiscounts}</span>
-          </span>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100/80 text-purple-800 border border-purple-200/60 flex items-center gap-1 shrink-0">
-            <span>🎙️</span>
-            <span>{t.badgeVoice}</span>
-          </span>
-          <span className="text-[10px] font-medium text-lake-400 ml-auto shrink-0">
-            Müller's AI
-          </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsSavedPlansOpen(true)}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold py-1.5 px-2 rounded-xl bg-lake-50 hover:bg-lake-100 text-lake-800 border border-lake-200 shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            <span>🗺️</span>
+            <span>{t.savedPlansButton}</span>
+            {savedPlansCount > 0 && (
+              <span className="px-1.5 py-0.2 bg-lake-600 text-white rounded-full text-[9px] font-bold">
+                {savedPlansCount}
+              </span>
+            )}
+          </button>
         </div>
       </header>
 
@@ -378,7 +450,11 @@ export default function App() {
       <main className="flex-1 overflow-y-auto py-4 sm:py-6 space-y-4 sm:space-y-6">
         {messages.map((msg, i) => (
           <div key={i} className="msg-enter space-y-2.5 sm:space-y-3">
-            <ChatMessage role={msg.role} text={msg.text} />
+            <ChatMessage
+              role={msg.role}
+              text={msg.text}
+              onSavePlan={handleSavePlan}
+            />
             {msg.sources?.length > 0 && (
               <div className="pl-2 sm:pl-10">
                 <div className="flex items-center justify-between mb-2 gap-2">
@@ -428,7 +504,7 @@ export default function App() {
       </main>
 
       {/* ── Input (Mobil-optimalizált elrendezés) ── */}
-      <footer className="py-2.5 sm:py-4 border-t border-lake-200 shrink-0 bg-lake-50/50">
+      <footer className="py-2.5 sm:py-3.5 border-t border-lake-200 shrink-0 bg-lake-50/50">
         {/* Hallgatózási állapot jelző sáv */}
         {isListening && (
           <div className="flex items-center gap-2 mb-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-pulse shadow-xs">
@@ -444,7 +520,7 @@ export default function App() {
           </div>
         )}
 
-        <form onSubmit={sendMessage} className="flex items-center gap-1.5 sm:gap-2">
+        <form onSubmit={handleFormSubmit} className="flex items-center gap-1.5 sm:gap-2">
           <div className="relative flex-1 min-w-0">
             <input
               ref={inputRef}
@@ -479,22 +555,26 @@ export default function App() {
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="h-10 sm:h-11 px-3 sm:px-5 rounded-xl bg-lake-600 text-white font-semibold text-xs sm:text-sm
+            className="h-10 sm:h-11 px-3.5 sm:px-5 rounded-xl bg-lake-600 text-white font-semibold text-xs sm:text-sm
                        hover:bg-lake-700 active:scale-95 transition-all shadow-xs flex items-center justify-center shrink-0
-                       disabled:opacity-40 disabled:cursor-not-allowed"
+                       disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             <span>{t.send}</span>
           </button>
         </form>
-        <p className="mt-1.5 sm:mt-2 text-center text-[10px] sm:text-xs text-lake-400 truncate">
-          {t.footerInfo}
-        </p>
       </footer>
 
       {/* ── Részletek & Interaktív Google Térkép Modal ── */}
       <PlaceModal
         place={selectedPlace}
         onClose={() => setSelectedPlace(null)}
+      />
+
+      {/* ── Mentett Tervek & Web Share Modal ── */}
+      <SavedPlansModal
+        isOpen={isSavedPlansOpen}
+        onClose={() => setIsSavedPlansOpen(false)}
+        onPlansChange={count => setSavedPlansCount(count)}
       />
 
     </div>

@@ -37,3 +37,5 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 - [x] Fázis 6.4: Auto-nyelvfelismerés (I18n: HU/EN/DE), dinamikus üdvözlés & UI szótár, elegáns gombmentes automatikus Splash Screen
 - [x] Fázis 6.5: PWA (Progressive Web App) integráció (vite-plugin-pwa, manifest, mobilos telepíthetőség)
 - [x] Fázis 6.6: UI finomhangolás és Mobil Reszponzivitás (egyedi PWA logó integráció az emojik helyére, mobil fejléc és input sáv optimalizálása)
+- [x] Fázis 6.6.1: UI takarítás és Mentett Programtervek (LocalStorage terv mentés, SavedPlansModal & Web Share API megosztás, Kedvezmények gyorsgomb)
+
