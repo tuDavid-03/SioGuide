@@ -275,21 +275,18 @@ Felhasználói kérdés
 
 ---
 
-### 6.3 – Adatbázis Bővítés & Új Látványosságok (23 Helyszín)
+### 6.3.1 – Token Limit Emelés & Ár / Kontakt RAG Kiegészítés
 
 **Dátum:** 2026-11-13
 
+- `backend/main.py`:
+  - `max_output_tokens` megnövelve 1024-ről 4096-ra a `client.chats.create` hívásban, megelőzve a komplex többállomásos menettervek levágását.
+  - A Gemini rendszerutasítás felkészítve a helyszínek árainak és asztalfoglalási telefonszámainak felhasználására és megbízható költségbecslések adására.
 - `backend/seed.py`:
-  - 5 új siófoki helyszín hozzáadva:
-    - **Penthouse Pub & Bar – Sió Pláza** (szórakozás / biliárd, 10% kedvezmény)
-    - **Roxy Étterem és Kávézó** (étterem a Fő téren, 10% kedvezmény)
-    - **Rózsakert és Hajóállomás Park** (látványosság / park a kikötőben)
-    - **Siófoki Víztorony és Kilátó** (látványosság / kávézó, 15% kedvezmény)
-    - **Marci Reggeliző és Brunch Bár** (reggeliző / kávézó, ingyenes kávé/limonádé)
-  - Sikeresen lefutott a Supabase újrafeltöltése és vektorizálása (`gemini-embedding-001`, 768 dimenzió).
-  - Összesen 23 helyszín él az adatbázisban, köztük 11 kiemelt Müller's partnerkedvezménnyel.
-- `frontend/src/components/SourceCard.jsx` & `PlaceModal.jsx`:
-  - Kiegészítve az új kategóriák stílusaival és egyedi emoji ikonjaival (🎱 biliárd, 🌹 park, 🗼 víztorony, ☕ reggeliző).
+  - Minden helyszínhez bekerültek konkrét árak (`price_info`) és elérhetőségek/telefonszámok (`contact`).
+  - A gazdagított leírás automatikusan összefűzi ezeket az adatokat a leírással és a beágyazandó szöveggel, így SQL migráció nélkül a vektorok, a RAG kontextus, a kártyák és a modálok is tartalmazzák az árakat és elérhetőségeket.
+  - Supabase adatbázis sikeresen frissítve.
+
 
 
 

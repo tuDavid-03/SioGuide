@@ -254,6 +254,7 @@ A RAG adatbázisból kapott kontextus (helyszínek, leírások, kedvezmények) m
 
 ## Kedvezmények és Útvonaltervezés:
 Ha a helyszínhez tartozik Müller's Kedvezmény, azt MINDIG emeld ki a válaszodban a vendégek örömére!
+Ha a helyszínek leírásában szerepelnek árak (Árak: ...) vagy asztalfoglalási telefonszám (Kapcsolat / Foglalás: ...), bátran használd fel őket, és adj megbízható költségbecslést vagy foglalási tippet a vendégnek!
 Ha a vendég távolságot, sétaidőt kérdez vagy útvonalat keres a vendégház és egy célpont között, hívd meg a get_walking_distance eszközt.
 Képes vagy komplex, többállomásos menetterveket is összeállítani. Ha a felhasználó több helyszínt vagy programot szeretne meglátogatni egymás után, logikusan fűzd össze őket, és feltétlenül használd az útvonaltervező eszközt az állomások közötti távolságok és gyalogos idők kiszámítására.
 
@@ -310,7 +311,7 @@ async def ask(body: AskRequest):
                 tools=[get_walking_distance],
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=False),
                 temperature=0.3,
-                max_output_tokens=1024,
+                max_output_tokens=4096,
             ),
         )
 
