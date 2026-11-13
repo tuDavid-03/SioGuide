@@ -239,10 +239,12 @@ export default function App() {
     submitQuestion(queryText)
   }
 
-  // Helyszín hozzáadása az útiterv-kosárhoz (Trip Cart)
-  function handleAddToCart(placeName) {
+  // Helyszín hozzáadása / eltávolítása az útiterv-kosárból (Toggle Trip Cart)
+  function toggleTripCartItem(placeName) {
     setTripCart(prev => {
-      if (prev.includes(placeName)) return prev
+      if (prev.includes(placeName)) {
+        return prev.filter(item => item !== placeName)
+      }
       return [...prev, placeName]
     })
   }
@@ -490,7 +492,7 @@ export default function App() {
                       key={src.id}
                       source={src}
                       onClick={() => setSelectedPlace(src)}
-                      onAddToCart={handleAddToCart}
+                      onToggleCart={toggleTripCartItem}
                       isInCart={tripCart.includes(src.name)}
                     />
                   ))}

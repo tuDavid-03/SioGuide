@@ -38,7 +38,7 @@ function getSimilarityStyle(sim) {
   return                  { bar: 'bg-gray-300',   text: 'text-gray-500',   label: 'Gyenge'         }
 }
 
-export default function SourceCard({ source, onClick, onAddToCart, isInCart }) {
+export default function SourceCard({ source, onClick, onToggleCart, onAddToCart, isInCart }) {
   const { name, category, description, similarity, discount_info } = source
   const pct    = Math.round(similarity * 100)
   const style  = getStyle(category)
@@ -126,22 +126,34 @@ export default function SourceCard({ source, onClick, onAddToCart, isInCart }) {
         </span>
         <button
           type="button"
-          disabled={isInCart}
           onClick={(e) => {
             e.stopPropagation()
-            if (!isInCart) {
-              onAddToCart?.(name)
+            if (onToggleCart) {
+              onToggleCart(name)
+            } else if (onAddToCart) {
+              onAddToCart(name)
             }
           }}
-          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold text-[10px] shadow-xs transition-all z-10 ${
+          className={`group/btn inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold text-[10px] shadow-xs transition-all z-10 cursor-pointer active:scale-95 ${
             isInCart
-              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300/80 cursor-default opacity-90'
-              : 'bg-lake-600 hover:bg-lake-700 active:scale-95 text-white cursor-pointer'
+              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300'
+              : 'bg-lake-600 hover:bg-lake-700 text-white'
           }`}
-          title={isInCart ? `"${name}" hozzáadva a kiválasztott helyszínekhez` : `"${name}" hozzáadása a programterv-kosárhoz`}
+          title={isInCart ? `"${name}" eltávolítása a kosárból` : `"${name}" hozzáadása a programterv-kosárhoz`}
         >
-          <span>{isInCart ? '✓' : '➕'}</span>
-          <span>{isInCart ? 'Hozzáadva' : 'Tervhez'}</span>
+          {isInCart ? (
+            <>
+              <span className="group-hover/btn:hidden">✓</span>
+              <span className="group-hover/btn:hidden">Hozzáadva</span>
+              <span className="hidden group-hover/btn:inline">❌</span>
+              <span className="hidden group-hover/btn:inline">Eltávolítás</span>
+            </>
+          ) : (
+            <>
+              <span>➕</span>
+              <span>Tervhez</span>
+            </>
+          )}
         </button>
       </div>
     </div>

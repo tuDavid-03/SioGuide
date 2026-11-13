@@ -41,6 +41,8 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 - [x] Fázis 6.8: UX Fixek, Maps Útvonal Link és 'Tervhez adás' funkció (alsó térköz, mentés gomb szinkronizáció CustomEvent-tel, [+] Tervhez gyorsgomb a kártyákon, Google Maps többállomásos útvonal link a backendben)
 - [x] Fázis 6.9: Intelligens Mentés Gomb és Útiterv-Kosár (Trip Cart) (intelligens szűrés ChatMessage-ben, helyszín kosárba gyűjtés SourceCard-on, lebegő Checkout sáv és automatikus prompt generálás)
 - [x] Fázis 6.9.1: UI Finomítások és Béta 2 Véglegesítés (természetes kosár prompt, azonnali megosztás gomb a chatben, 📍 vízjel fejléc formázás)
+- [x] Fázis 6.9.2: Kosár Elemek Eltávolítása (Toggle Funkció) (toggleTripCartItem az App.jsx-ben, aktív gomb visszavonás és ❌ Eltávolítás hover UX a SourceCard-on)
+
 
 ## 6. Jövőbeli Fejlesztések (v2.0)
 - [ ] Fázis 6.7: Valós idejű BAHART hajómenetrend integráció (siófoki kikötői járatok lekérdezése)

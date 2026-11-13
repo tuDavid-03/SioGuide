@@ -410,5 +410,22 @@ Felhasználói kérdés
   - Fázis 6.9.1 lezárva (Béta 2 release kész).
   - A BAHART modul és egyéb távlati funkciók áthelyezve a 'Jövőbeli Fejlesztések (v2.0)' ütemtervbe.
 
+---
+
+### 6.9.2 – Kosár Elemek Eltávolítása (Toggle Funkció)
+
+**Dátum:** 2026-11-13
+
+- `frontend/src/App.jsx`:
+  - **`toggleTripCartItem(placeName)`:** A korábbi egyirányú hozzáadási logika átalakítva toggle logikára. Ha az adott helyszín már szerepel a `tripCart` listában, eltávolítja (`filter`), ha még nem szerepel, hozzáfűzi (`[...prev, placeName]`).
+  - Átadva a `SourceCard` komponenseknek az `onToggleCart` prop segítségével.
+- `frontend/src/components/SourceCard.jsx`:
+  - A gomb mostantól aktív kosár-állapotban sem kerül letiltásra (`disabled={false}`).
+  - **Interaktív Hover UX:**
+    - Alaphelyzetben: `✓ Hozzáadva` (zöldes/emerald háttér).
+    - Egérráhúzáskor (hover): Átvált `❌ Eltávolítás` szövegre és finom pirosas (`hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300`) árnyalatra.
+    - Kattintáskor azonnal kiveszi a helyszínt a kosárból anélkül, hogy a részletek modál felugrana.
+
+
 
 
