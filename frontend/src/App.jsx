@@ -6,9 +6,14 @@ import PlaceModal from './components/PlaceModal'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
+// Web Speech API ellenőrzése
+const SpeechRecognition = typeof window !== 'undefined'
+  ? window.SpeechRecognition || window.webkitSpeechRecognition
+  : null
+
 const WELCOME_MESSAGE = {
   role: 'assistant',
-  text: 'Üdvözöllek! 🌊 Én vagyok a **SioGuide**, a Müller\'s vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy szállásinformációk!',
+  text: 'Üdvözöllek! 🌊 Én vagyok a **SioGuide**, a Müller\'s vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy kedvezmények! (You can ask in English or German too!)',
   sources: [],
 }
 
@@ -18,18 +23,75 @@ export default function App() {
   const [loading, setLoading]             = useState(false)
   const [error, setError]                 = useState(null)
   const [selectedPlace, setSelectedPlace] = useState(null)
+  const [isListening, setIsListening]     = useState(false)
   const bottomRef                         = useRef(null)
   const inputRef                          = useRef(null)
+  const recognitionRef                    = useRef(null)
 
   // Automatikus görgetés az utolsó üzenetre
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
+  // Mikrofon / Hangfelismerés (Web Speech API)
+  function toggleListening() {
+    if (!SpeechRecognition) {
+      alert('A böngésződ nem támogatja a beépített hangfelismerést (SpeechRecognition). Próbáld Google Chrome vagy Edge böngészőből!')
+      return
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+      return
+    }
+
+    try {
+      const recognition = new SpeechRecognition()
+      // Automatikus vagy magyar nyelv felismerés (a böngésző környezete szerint)
+      recognition.lang = navigator.language || 'hu-HU'
+      recognition.continuous = false
+      recognition.interimResults = false
+
+      recognition.onstart = () => {
+        setIsListening(true)
+      }
+
+      recognition.onresult = (event) => {
+        const transcript = event.results?.[0]?.[0]?.transcript
+        if (transcript) {
+          setInput(prev => (prev ? `${prev} ${transcript}` : transcript))
+        }
+      }
+
+      recognition.onerror = (event) => {
+        console.warn('SpeechRecognition hiba:', event.error)
+        setIsListening(false)
+      }
+
+      recognition.onend = () => {
+        setIsListening(false)
+        inputRef.current?.focus()
+      }
+
+      recognitionRef.current = recognition
+      recognition.start()
+    } catch (err) {
+      console.error('Nem sikerült elindítani a beszédfelismerőt:', err)
+      setIsListening(false)
+    }
+  }
+
   async function sendMessage(e) {
     e.preventDefault()
     const question = input.trim()
     if (!question || loading) return
+
+    // Ha beszéd rögzítés ment, leállítjuk
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+    }
 
     setInput('')
     setError(null)
@@ -78,11 +140,15 @@ export default function App() {
         <div className="hidden sm:flex items-center gap-2">
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 shadow-xs">
             <span>🎁</span>
-            <span>Partnerkedvezmények</span>
+            <span>Kedvezmények</span>
           </span>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-lake-100 text-lake-800 border border-lake-200 flex items-center gap-1 shadow-xs">
-            <span>🗺️</span>
-            <span>Google Maps</span>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1 shadow-xs">
+            <span>🎙️</span>
+            <span>Hangvezérlés</span>
+          </span>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 flex items-center gap-1 shadow-xs">
+            <span>🌍</span>
+            <span>HU / EN / DE</span>
           </span>
         </div>
       </header>
@@ -138,19 +204,51 @@ export default function App() {
 
       {/* ── Input ── */}
       <footer className="py-4 border-t border-lake-200 shrink-0">
+        {/* Hallgatózási állapot jelző sáv */}
+        {isListening && (
+          <div className="flex items-center gap-2 mb-2 px-3.5 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-pulse shadow-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping shrink-0" />
+            <span>🎙️ Hallgatom a beszédet... Mondd el a kérdésed!</span>
+            <button
+              type="button"
+              onClick={toggleListening}
+              className="ml-auto text-rose-600 hover:text-rose-900 underline text-[11px]"
+            >
+              Leállítás
+            </button>
+          </div>
+        )}
+
         <form onSubmit={sendMessage} className="flex gap-2">
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Pl. Milyen messze van gyalog a Nagystrand? Hol van kedvezményünk?"
+            placeholder={isListening ? "Beszélj most..." : "Pl. Milyen messze van gyalog a Nagystrand? / What discounts do we have?"}
             disabled={loading}
             className="flex-1 rounded-xl border border-lake-200 bg-white px-4 py-3
                        text-sm text-gray-800 placeholder-gray-400
                        focus:outline-none focus:ring-2 focus:ring-lake-400 focus:border-transparent
                        disabled:opacity-50 shadow-sm"
           />
+
+          {/* Mikrofon Gomb (Web Speech API) */}
+          <button
+            type="button"
+            onClick={toggleListening}
+            disabled={loading}
+            title={isListening ? "Diktálás leállítása" : "Beszédfelismerés / Diktálás"}
+            className={`px-3.5 py-3 rounded-xl font-semibold text-sm transition-all shadow-sm flex items-center justify-center shrink-0
+              ${isListening
+                ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-200'
+                : 'bg-white hover:bg-lake-50 text-lake-600 border border-lake-200 hover:border-lake-400 active:scale-95'
+              } disabled:opacity-40 disabled:cursor-not-allowed`}
+          >
+            <span className="text-base">{isListening ? '🛑' : '🎙️'}</span>
+          </button>
+
+          {/* Küldés Gomb */}
           <button
             type="submit"
             disabled={loading || !input.trim()}
@@ -162,7 +260,7 @@ export default function App() {
           </button>
         </form>
         <p className="mt-2 text-center text-xs text-lake-400">
-          Supabase pgvector (768 dim) · Gemini 3.8 Flash Agentic Chat · Google Maps API
+          Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps
         </p>
       </footer>
 

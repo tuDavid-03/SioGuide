@@ -30,9 +30,9 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 - [x] Fázis 5.3: Frontend: Interaktív PlaceModal (Google Térkép beágyazás) és feltűnő Müller's Kedvezmény badge-ek a SourceCard-on
 - [x] Fázis 5.4: Béta verzió záró tesztelés, kód review és dokumentáció frissítése
 
-## 5. Fázis 6: Továbbfejlesztés és Új Funkciók (Ötletelés / Roadmap)
-- [ ] Fázis 6.1: Valós idejű BAHART hajómenetrend integráció (siófoki kikötői járatok dinamikus lekérdezése)
-- [ ] Fázis 6.2: Többnyelvű asszisztens támogatás (automatikus HU / EN / DE nyelvfelismerés külföldi vendégeknek)
-- [ ] Fázis 6.3: Hangalapú asszisztens modul (Web Speech API / Whisper beszédbevitel és felolvasás)
-- [ ] Fázis 6.4: Müller's közvetlen szobafoglalási és reggeli-rendelési űrlap modul a chatbe ágyazva
-- [ ] Fázis 6.5: Offline PWA (Progressive Web App) támogatás mobil eszközökre és helyi gyorsítótárazás
+## 5. Fázis 6: Hangalapú Interakció, Többnyelvűség és UI Finomhangolás
+- [x] Fázis 6.1: Frontend: Web Speech API integráció (elegáns mikrofon gomb, hangalapú diktálás, pulzáló hallgatózási UI)
+- [x] Fázis 6.2: Backend: Többnyelvűség szigorú prompt-szabályozása (dinamikus HU / EN / DE válaszadás és kedvezmény-fordítás)
+- [ ] Fázis 6.3: Adatbázis bővítés (további siófoki partnerek, nyitvatartások és közvetlen elérhetőségek)
+- [ ] Fázis 6.4: UI / UX finomhangolás és mikróinterakciók (üzenet másolás, mobil optimalizálás, toast értesítések)
+- [ ] Fázis 6.5: Valós idejű BAHART hajómenetrend integráció (siófoki kikötői járatok lekérdezése)

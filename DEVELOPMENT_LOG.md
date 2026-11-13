@@ -259,5 +259,31 @@ Felhasználói kérdés
 - `README.md`: Teljes körű dokumentáció frissítés a stabil Béta verzióhoz: Agentic AI architektúra, Google Maps Distance Matrix Tool Calling, RAG-ba ágyazott `discount_info` kedvezmények, interaktív Google Maps Embed iframe-ek és Fázis 6 továbbfejlesztési roadmap.
 - `PROJECT_BOARD.md`: Fázis 5 lezárva, új Fázis 6 (továbbfejlesztési ötlettár) bevezetve.
 
+---
+
+## Fázis 6 – Hangalapú Interakció, Többnyelvűség és UI Finomhangolás 🎙️🌍
+
+### 6.1 – Web Speech API Beszédfelismerés (Diktálás)
+
+**Dátum:** 2026-11-13
+
+- `frontend/src/App.jsx`:
+  - Beépítve a natív böngészős `window.SpeechRecognition || window.webkitSpeechRecognition` API.
+  - Elegáns, reszponzív mikrofon gomb a beviteli mező mellett (`🎙️` / `🛑`).
+  - Dinamikus, pulzáló hallgatózási állapotjelző sáv piros ping animációval és leállítási lehetőséggel.
+  - Beszédfelismerés eredményének automatikus beírása és hozzáfűzése a chat input mezőhöz.
+
+---
+
+### 6.2 – Többnyelvűség és Nyelvi Szabályozás
+
+**Dátum:** 2026-11-13
+
+- `backend/main.py`:
+  - Szigorú többnyelvűségi rendszerutasítás hozzáadva a Gemini 3.8 Flash RAG promptjához.
+  - A modell KIZÁRÓLAG azon a nyelven válaszol, amin a kérdés érkezett (pl. HU, EN, DE).
+  - A magyar nyelvű adatbázis-találatok és Müller's partnerkedvezmények automatikus és természetes fordítása a vendég nyelvére, a helyszínnevek (tulajdonnevek) felismerhető megőrzése mellett.
+
+
 
 
