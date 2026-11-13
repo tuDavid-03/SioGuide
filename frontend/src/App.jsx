@@ -236,6 +236,11 @@ export default function App() {
     submitQuestion(queryText)
   }
 
+  // Helyszín beépítése a mai programtervbe a SourceCard '➕ Tervhez' gombjából
+  function handleAddToPlan(placeName) {
+    submitQuestion(`Kérlek, építsd be a mai programtervembe ezt a helyszínt is: ${placeName}`)
+  }
+
   // Mikrofon / Hangfelismerés (Web Speech API)
   function toggleListening() {
     if (!SpeechRecognition) {
@@ -471,6 +476,7 @@ export default function App() {
                       key={src.id}
                       source={src}
                       onClick={() => setSelectedPlace(src)}
+                      onAddToPlan={handleAddToPlan}
                     />
                   ))}
                 </div>
@@ -503,8 +509,8 @@ export default function App() {
         <div ref={bottomRef} />
       </main>
 
-      {/* ── Input (Mobil-optimalizált elrendezés) ── */}
-      <footer className="py-2.5 sm:py-3.5 border-t border-lake-200 shrink-0 bg-lake-50/50">
+      {/* ── Input (Mobil-optimalizált elrendezés + alsó térköz) ── */}
+      <footer className="pt-2.5 pb-6 sm:pb-8 border-t border-lake-200 shrink-0 bg-lake-50/50">
         {/* Hallgatózási állapot jelző sáv */}
         {isListening && (
           <div className="flex items-center gap-2 mb-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-pulse shadow-xs">

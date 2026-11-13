@@ -359,6 +359,20 @@ Felhasználói kérdés
   - Formázott markdown előnézet, dátum- és időbélyeggel ellátott kártyák és egyedi törlés (`🗑️`).
   - **Natív Web Share API (`navigator.share`):** Egy kattintással megosztható a teljes programterv barátokkal (WhatsApp, Messenger, SMS), asztali gépen pedig intelligens automatikus vágólapra másolási fallback funkcióval.
 
+---
 
+### 6.8 – UX Fixek, Google Maps Útvonal Link & 'Tervhez adás' Funkció
 
+**Dátum:** 2026-11-13
+
+- `frontend/src/App.jsx`:
+  - **Alsó térköz javítása:** A chat footer alsó kitöltése `pb-6 sm:pb-8`-ra bővítve, hogy a beviteli mező mobilon se tapadjon a képernyő alsó széléhez és a virtuális navigációs sávhoz.
+  - **Helyszín beépítése a programtervbe:** Megvalósítva a `handleAddToPlan` callback, ami automatikusan beküldi a chatbe a programterv-bővítési kérést (*"Kérlek, építsd be a mai programtervembe ezt a helyszínt is: [Hely neve]"*).
+- `frontend/src/components/SourceCard.jsx`:
+  - Beépítve egy új **`➕ Tervhez`** gomb a kártyák alsó sávjába. Az `e.stopPropagation()` használatával a gomb megnyomása nem nyitja meg a PlaceModal-t, hanem közvetlenül elindítja a programterv bővítését.
+- `frontend/src/components/SavedPlansModal.jsx` & `frontend/src/components/ChatMessage.jsx`:
+  - **State Desync bugfix:** Terv törlésekor a `SavedPlansModal` egy `planDeleted` `CustomEvent`-et lő ki a `window`-ra, amit minden `ChatMessage` lehallgat, és amennyiben a hozzá tartozó tervet törölték, azonnal visszaváltja a gombot az aktív `💾 Terv mentése` állapotra.
+  - **Kattintható Markdown Linkek:** A `parseSimpleMarkdown` függvény kiegészítve regex-alapú Markdown link konvertálással (`[szöveg](url)` -> `<a href="..." target="_blank">`), így a generált térképes és külső hivatkozások közvetlenül kattinthatóvá váltak a chatben és a mentett tervekben.
+- `backend/main.py`:
+  - A Gemini `system_instruction` promptja kiegészítve szigorú utasítással: többállomásos útiterv összeállításakor a válasz végén kötelező legenerálni a kattintható Google Maps útvonaltervező linket az állomásokkal összefűzve: `[🗺️ Útvonal megnyitása Google Maps-ben](https://www.google.com/maps/dir/Indulási+cím/1.+állomás+neve+Siófok/2.+állomás+neve+Siófok)`.
 

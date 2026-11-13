@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react'
 
 function parseSimpleMarkdown(text) {
   return text
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-bold text-lake-600 hover:text-lake-800 underline hover:no-underline">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,     '<em>$1</em>')
     .replace(/\n/g,            '<br />')
@@ -27,15 +28,22 @@ export default function ChatMessage({ role, text, onSavePlan }) {
     }
   })
 
-  // Új üzenet vagy szöveg változása esetén szinkronizáljuk a mentett állapotot
+  // Szinkronizáció: ha a SavedPlansModal-ban törölnek egy tervet (planDeleted CustomEvent)
   useEffect(() => {
     if (isUser || typeof window === 'undefined') return
-    try {
-      const existing = JSON.parse(localStorage.getItem('sioguide_saved_plans') || '[]')
-      setSaved(existing.some(p => p.text === text))
-    } catch {
-      setSaved(false)
+
+    function checkSync() {
+      try {
+        const existing = JSON.parse(localStorage.getItem('sioguide_saved_plans') || '[]')
+        setSaved(existing.some(p => p.text === text))
+      } catch {
+        setSaved(false)
+      }
     }
+
+    checkSync()
+    window.addEventListener('planDeleted', checkSync)
+    return () => window.removeEventListener('planDeleted', checkSync)
   }, [text, isUser])
 
   function handleSave() {

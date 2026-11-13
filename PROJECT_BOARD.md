@@ -38,4 +38,5 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 - [x] Fázis 6.5: PWA (Progressive Web App) integráció (vite-plugin-pwa, manifest, mobilos telepíthetőség)
 - [x] Fázis 6.6: UI finomhangolás és Mobil Reszponzivitás (egyedi PWA logó integráció az emojik helyére, mobil fejléc és input sáv optimalizálása)
 - [x] Fázis 6.6.1: UI takarítás és Mentett Programtervek (LocalStorage terv mentés, SavedPlansModal & Web Share API megosztás, Kedvezmények gyorsgomb)
+- [x] Fázis 6.8: UX Fixek, Maps Útvonal Link és 'Tervhez adás' funkció (alsó térköz, mentés gomb szinkronizáció CustomEvent-tel, [+] Tervhez gyorsgomb a kártyákon, Google Maps többállomásos útvonal link a backendben)
 

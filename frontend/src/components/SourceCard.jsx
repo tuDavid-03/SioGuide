@@ -38,7 +38,7 @@ function getSimilarityStyle(sim) {
   return                  { bar: 'bg-gray-300',   text: 'text-gray-500',   label: 'Gyenge'         }
 }
 
-export default function SourceCard({ source, onClick }) {
+export default function SourceCard({ source, onClick, onAddToPlan }) {
   const { name, category, description, similarity, discount_info } = source
   const pct    = Math.round(similarity * 100)
   const style  = getStyle(category)
@@ -119,10 +119,23 @@ export default function SourceCard({ source, onClick }) {
         {description}
       </p>
 
-      {/* Kattintás jelző alsó sáv */}
-      <div className="mt-2.5 pt-2 border-t border-gray-200/50 flex items-center justify-between text-[10px] text-lake-600 font-medium">
-        <span>Kattints a részletekért</span>
-        <span className="group-hover:translate-x-1 transition-transform">🗺️ Térkép &rarr;</span>
+      {/* Kattintás és akció alsó sáv */}
+      <div className="mt-2.5 pt-2 border-t border-gray-200/50 flex items-center justify-between text-[11px] gap-2">
+        <span className="text-[10px] text-gray-500 group-hover:text-lake-600 transition-colors">
+          🗺️ Térkép &rarr;
+        </span>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddToPlan?.(name)
+          }}
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-lake-600 hover:bg-lake-700 text-white font-semibold text-[10px] shadow-xs active:scale-95 transition-all cursor-pointer z-10"
+          title={`"${name}" beépítése a mai programtervbe`}
+        >
+          <span>➕</span>
+          <span>Tervhez</span>
+        </button>
       </div>
     </div>
   )

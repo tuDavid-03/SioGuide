@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 
 /**
  * Egyszerű markdown formázás a mentett szövegek megjelenítéséhez
+ * Támogatja a Markdown linkeket, félkövér és dőlt formázást, és sortöréseket.
  */
 function parseSimpleMarkdown(text) {
   return text
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-bold text-lake-600 hover:text-lake-800 underline hover:no-underline">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,     '<em>$1</em>')
     .replace(/\n/g,            '<br />')
@@ -57,11 +59,18 @@ export default function SavedPlansModal({ isOpen, onClose, onPlansChange }) {
 
   // Terv törlése
   function handleDelete(id) {
+    const deletedPlan = plans.find(p => p.id === id)
     const updated = plans.filter(p => p.id !== id)
     setPlans(updated)
     try {
       localStorage.setItem('sioguide_saved_plans', JSON.stringify(updated))
       onPlansChange?.(updated.length)
+      // CustomEvent küldése a ChatMessage komponensek állapotának azonnali szinkronizálására
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('planDeleted', {
+          detail: { id, text: deletedPlan?.text }
+        }))
+      }
     } catch (err) {
       console.error('Hiba a törlés mentésekor:', err)
     }
