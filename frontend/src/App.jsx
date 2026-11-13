@@ -11,32 +11,153 @@ const SpeechRecognition = typeof window !== 'undefined'
   ? window.SpeechRecognition || window.webkitSpeechRecognition
   : null
 
-const WELCOME_MESSAGE = {
-  role: 'assistant',
-  text: 'Üdvözöllek! 🌊 Én vagyok a **SioGuide**, a Müller\'s vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy kedvezmények! (You can ask in English or German too!)',
-  sources: [],
+/**
+ * Böngésző nyelvének automatikus felismerése
+ * - 'hu' kezdetű -> magyar
+ * - 'de' kezdetű -> német
+ * - egyéb -> angol ('en')
+ */
+function detectBrowserLanguage() {
+  if (typeof navigator !== 'undefined' && navigator.language) {
+    const code = navigator.language.slice(0, 2).toLowerCase()
+    if (code === 'hu') return 'hu'
+    if (code === 'de') return 'de'
+  }
+  return 'en'
+}
+
+/**
+ * Többnyelvű (HU / EN / DE) szótár a felülethez és üdvözléshez
+ */
+const I18N = {
+  hu: {
+    welcome: "Üdvözöllek! 🌊 Én vagyok a **SioGuide**, a Müller's vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy Müller's kedvezmények!",
+    placeholder: "Kérdezz valamit... (pl. Milyen messze van gyalog a Nagystrand?)",
+    placeholderListening: "Beszélj most, hallgatlak...",
+    send: "Küldés",
+    subTitle: "Müller's Vendégházak · Agentic AI Asszisztens",
+    badgeDiscounts: "Kedvezmények",
+    badgeVoice: "Hangvezérlés",
+    sourcesTitle: "Felhasznált helyszínek & Kedvezmények",
+    sourcesHint: "Kattints a kártyára a térképért",
+    listeningBar: "🎙️ Hallgatom a beszédet... Mondd el a kérdésed!",
+    listeningStop: "Leállítás",
+    speechNotSupported: "A böngésződ nem támogatja a beépített hangfelismerést (SpeechRecognition). Próbáld Google Chrome vagy Edge böngészőből!",
+    footerInfo: "Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps",
+    splashSubtitle: "Müller's AI Concierge · Siófok",
+    splashTagline: "Személyre szabott balatoni élmények & intelligens digitális asszisztens",
+    splashLoading: "Asszisztens betöltése...",
+    voiceTitleActive: "Diktálás leállítása",
+    voiceTitleInactive: "Beszédfelismerés / Diktálás",
+  },
+  en: {
+    welcome: "Welcome! 🌊 I am **SioGuide**, the AI concierge for Müller's guesthouses. Ask me anything about Siófok – beaches, restaurants, activities, weather, walking distances, or Müller's discounts!",
+    placeholder: "Ask me anything... (e.g. How far is the Main Beach on foot?)",
+    placeholderListening: "Listening, please speak now...",
+    send: "Send",
+    subTitle: "Müller's Guesthouses · Agentic AI Concierge",
+    badgeDiscounts: "Discounts",
+    badgeVoice: "Voice Search",
+    sourcesTitle: "Referenced Places & Partner Discounts",
+    sourcesHint: "Click card for interactive map",
+    listeningBar: "🎙️ Listening to speech... Ask your question!",
+    listeningStop: "Stop",
+    speechNotSupported: "Your browser does not support built-in speech recognition. Please try Google Chrome or Microsoft Edge!",
+    footerInfo: "Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps",
+    splashSubtitle: "Müller's AI Concierge · Siófok",
+    splashTagline: "Tailored Lake Balaton experiences & intelligent guest concierge",
+    splashLoading: "Loading concierge...",
+    voiceTitleActive: "Stop dictation",
+    voiceTitleInactive: "Voice recognition / Dictation",
+  },
+  de: {
+    welcome: "Herzlich willkommen! 🌊 Ich bin **SioGuide**, der KI-Concierge der Müller's Gästehäuser. Frag mich gerne nach Stränden, Restaurants, Sehenswürdigkeiten, Gehdistanzen, Wetter oder Müller's Rabatten!",
+    placeholder: "Frag mich etwas... (z. B. Wie weit ist der Hauptstrand zu Fuß?)",
+    placeholderListening: "Ich höre zu, sprich bitte...",
+    send: "Senden",
+    subTitle: "Müller's Gästehäuser · Agentic KI-Concierge",
+    badgeDiscounts: "Rabatte",
+    badgeVoice: "Sprachsteuerung",
+    sourcesTitle: "Verwendete Orte & Partner-Rabatte",
+    sourcesHint: "Klicke auf die Karte für Details",
+    listeningBar: "🎙️ Ich höre zu... Stelle deine Frage!",
+    listeningStop: "Stopp",
+    speechNotSupported: "Dein Browser unterstützt die Spracherkennung nicht. Bitte verwende Google Chrome oder Microsoft Edge!",
+    footerInfo: "Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps",
+    splashSubtitle: "Müller's KI-Concierge · Siófok",
+    splashTagline: "Maßgeschneiderte Erlebnisse am Plattensee & digitaler Concierge",
+    splashLoading: "Concierge wird gestartet...",
+    voiceTitleActive: "Diktieren beenden",
+    voiceTitleInactive: "Spracherkennung / Diktieren",
+  },
 }
 
 export default function App() {
-  const [messages, setMessages]           = useState([WELCOME_MESSAGE])
+  // Auto-nyelvfelismerés a böngészőből
+  const [currentLang, setCurrentLang]     = useState(() => detectBrowserLanguage())
+  const t                                 = I18N[currentLang] || I18N.hu
+
+  // Üzenetek állapota az indításkori felismert nyelven
+  const [messages, setMessages]           = useState(() => [
+    {
+      role: 'assistant',
+      text: (I18N[detectBrowserLanguage()] || I18N.hu).welcome,
+      sources: [],
+    },
+  ])
+
   const [input, setInput]                 = useState('')
   const [loading, setLoading]             = useState(false)
   const [error, setError]                 = useState(null)
   const [selectedPlace, setSelectedPlace] = useState(null)
   const [isListening, setIsListening]     = useState(false)
+
+  // Splash Screen állapotok (1.6s megjelenítés + 0.6s sima fade-out)
+  const [showSplash, setShowSplash]       = useState(true)
+  const [splashFading, setSplashFading]   = useState(false)
+
   const bottomRef                         = useRef(null)
   const inputRef                          = useRef(null)
   const recognitionRef                    = useRef(null)
+
+  // Splash Screen automatikus időzített eltüntetése (Gomb nélkül)
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => {
+      setSplashFading(true)
+    }, 1600)
+
+    const hideTimer = setTimeout(() => {
+      setShowSplash(false)
+    }, 2200)
+
+    return () => {
+      clearTimeout(fadeTimer)
+      clearTimeout(hideTimer)
+    }
+  }, [])
 
   // Automatikus görgetés az utolsó üzenetre
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
+  // Nyelvváltás kezelése
+  function changeLanguage(newLang) {
+    if (newLang === currentLang) return
+    setCurrentLang(newLang)
+    setMessages(prev => {
+      // Ha még csak az első üdvözlő AI üzenet létezik, automatikusan frissítjük az új nyelvre
+      if (prev.length === 1 && prev[0].role === 'assistant') {
+        return [{ role: 'assistant', text: I18N[newLang].welcome, sources: [] }]
+      }
+      return prev
+    })
+  }
+
   // Mikrofon / Hangfelismerés (Web Speech API)
   function toggleListening() {
     if (!SpeechRecognition) {
-      alert('A böngésződ nem támogatja a beépített hangfelismerést (SpeechRecognition). Próbáld Google Chrome vagy Edge böngészőből!')
+      alert(t.speechNotSupported)
       return
     }
 
@@ -48,8 +169,8 @@ export default function App() {
 
     try {
       const recognition = new SpeechRecognition()
-      // Automatikus vagy magyar nyelv felismerés (a böngésző környezete szerint)
-      recognition.lang = navigator.language || 'hu-HU'
+      const langMap = { hu: 'hu-HU', de: 'de-DE', en: 'en-US' }
+      recognition.lang = langMap[currentLang] || navigator.language || 'hu-HU'
       recognition.continuous = false
       recognition.interimResults = false
 
@@ -124,7 +245,57 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-full max-w-3xl mx-auto px-4">
+    <div className="flex flex-col h-full max-w-3xl mx-auto px-4 relative">
+
+      {/* ── Elegáns Splash Screen (Automatikus eltűnés ~1.6 - 2.2s alatt) ── */}
+      {showSplash && (
+        <div
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-[#041a2e] via-lake-950 to-[#022b42] text-white transition-all duration-700 ease-in-out select-none ${
+            splashFading ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
+          }`}
+        >
+          {/* Balatoni háttérfények */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-32 -left-32 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-lake-400/15 rounded-full blur-3xl animate-pulse" />
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center text-center px-6">
+            {/* Lebegő / pulzáló ikon */}
+            <div className="relative mb-6">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-lake-600 via-lake-500 to-cyan-400 flex items-center justify-center shadow-2xl shadow-cyan-500/30 ring-4 ring-white/10 animate-bounce">
+                <span className="text-5xl drop-shadow select-none">🌊</span>
+              </div>
+              <div className="absolute -inset-2 rounded-3xl bg-cyan-400/20 blur-xl -z-10 animate-pulse" />
+            </div>
+
+            {/* Cím és Tipográfia */}
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white mb-2 drop-shadow-lg">
+              SioGuide
+            </h1>
+
+            {/* Nyelvhű Alcím */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-lake-200 text-xs sm:text-sm font-semibold mb-3 shadow-inner">
+              <span>✨</span>
+              <span>{t.splashSubtitle}</span>
+            </div>
+
+            <p className="text-xs sm:text-sm text-lake-200/80 max-w-sm font-light leading-relaxed">
+              {t.splashTagline}
+            </p>
+
+            {/* Töltési csík */}
+            <div className="mt-8 flex flex-col items-center gap-2">
+              <div className="w-36 h-1 rounded-full bg-white/15 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-lake-400 to-cyan-300 rounded-full animate-pulse w-full" />
+              </div>
+              <span className="text-[11px] text-lake-300/70 font-mono tracking-wider">
+                {t.splashLoading}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <header className="py-5 border-b border-lake-200 flex items-center justify-between gap-3 shrink-0">
@@ -134,22 +305,40 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-lake-900 leading-tight">SioGuide</h1>
-            <p className="text-xs text-lake-500">Müller's Vendégházak · Agentic AI Asszisztens</p>
+            <p className="text-xs text-lake-500">{t.subTitle}</p>
           </div>
         </div>
-        <div className="hidden sm:flex items-center gap-2">
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 shadow-xs">
-            <span>🎁</span>
-            <span>Kedvezmények</span>
-          </span>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1 shadow-xs">
-            <span>🎙️</span>
-            <span>Hangvezérlés</span>
-          </span>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 flex items-center gap-1 shadow-xs">
-            <span>🌍</span>
-            <span>HU / EN / DE</span>
-          </span>
+
+        <div className="flex items-center gap-2">
+          {/* Nyelvváltó gombok (HU / EN / DE) */}
+          <div className="flex items-center bg-lake-100/80 rounded-xl p-1 border border-lake-200/80 shadow-xs">
+            {['hu', 'en', 'de'].map(l => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => changeLanguage(l)}
+                className={`px-2 py-0.5 rounded-lg text-xs font-bold uppercase transition-all ${
+                  currentLang === l
+                    ? 'bg-white text-lake-800 shadow-xs scale-100'
+                    : 'text-lake-600 hover:text-lake-900 opacity-70 hover:opacity-100'
+                }`}
+                title={`Nyelv váltása: ${l.toUpperCase()}`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 shadow-xs">
+              <span>🎁</span>
+              <span>{t.badgeDiscounts}</span>
+            </span>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1 shadow-xs">
+              <span>🎙️</span>
+              <span>{t.badgeVoice}</span>
+            </span>
+          </div>
         </div>
       </header>
 
@@ -162,10 +351,10 @@ export default function App() {
               <div className="pl-10">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold text-lake-500 uppercase tracking-wide">
-                    Felhasznált helyszínek & Kedvezmények
+                    {t.sourcesTitle}
                   </p>
                   <span className="text-[11px] text-gray-400">
-                    Kattints a kártyára a térképért
+                    {t.sourcesHint}
                   </span>
                 </div>
                 <div className="grid gap-2.5 sm:grid-cols-2">
@@ -208,13 +397,13 @@ export default function App() {
         {isListening && (
           <div className="flex items-center gap-2 mb-2 px-3.5 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-pulse shadow-xs">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping shrink-0" />
-            <span>🎙️ Hallgatom a beszédet... Mondd el a kérdésed!</span>
+            <span>{t.listeningBar}</span>
             <button
               type="button"
               onClick={toggleListening}
               className="ml-auto text-rose-600 hover:text-rose-900 underline text-[11px]"
             >
-              Leállítás
+              {t.listeningStop}
             </button>
           </div>
         )}
@@ -225,7 +414,7 @@ export default function App() {
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={isListening ? "Beszélj most..." : "Pl. Milyen messze van gyalog a Nagystrand? / What discounts do we have?"}
+            placeholder={isListening ? t.placeholderListening : t.placeholder}
             disabled={loading}
             className="flex-1 rounded-xl border border-lake-200 bg-white px-4 py-3
                        text-sm text-gray-800 placeholder-gray-400
@@ -238,7 +427,7 @@ export default function App() {
             type="button"
             onClick={toggleListening}
             disabled={loading}
-            title={isListening ? "Diktálás leállítása" : "Beszédfelismerés / Diktálás"}
+            title={isListening ? t.voiceTitleActive : t.voiceTitleInactive}
             className={`px-3.5 py-3 rounded-xl font-semibold text-sm transition-all shadow-sm flex items-center justify-center shrink-0
               ${isListening
                 ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-200'
@@ -256,11 +445,11 @@ export default function App() {
                        hover:bg-lake-700 active:scale-95 transition-all shadow-sm
                        disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Küldés
+            {t.send}
           </button>
         </form>
         <p className="mt-2 text-center text-xs text-lake-400">
-          Supabase pgvector · Gemini 3.8 Flash Agentic Chat · Web Speech API · Google Maps
+          {t.footerInfo}
         </p>
       </footer>
 

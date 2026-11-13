@@ -287,8 +287,18 @@ Felhasználói kérdés
   - A gazdagított leírás automatikusan összefűzi ezeket az adatokat a leírással és a beágyazandó szöveggel, így SQL migráció nélkül a vektorok, a RAG kontextus, a kártyák és a modálok is tartalmazzák az árakat és elérhetőségeket.
   - Supabase adatbázis sikeresen frissítve.
 
+---
 
+### 6.4 – Auto-Nyelvfelismerés (I18n) & Elegáns Splash Screen
 
+**Dátum:** 2026-11-13
 
+- `frontend/src/App.jsx`:
+  - **Auto-Nyelvfelismerés (I18n):** A rendszer indításkor a `navigator.language` alapján automatikusan azonosítja a látogató nyelvét (`hu` -> magyar, `de` -> német, egyéb -> angol default `en`).
+  - **Dinamikus UI és Nyelvi Szótár (`I18N`):** Az AI üdvözlő üzenete, beviteli mező placeholder szövege, a gombok, fejlécek, diktálási sáv és forráskártyák feliratai automatikusan a felismert nyelven töltődnek be.
+  - **Interaktív Nyelvváltó:** A fejlécbe beépítésre került egy letisztult gyorsváltó (`HU` | `EN` | `DE`), ami azonnal átállítja a felületet és a még megválaszolatlan kezdeti üdvözlő üzenetet.
+  - **Többnyelvű Web Speech API:** A mikrofon felismerési nyelve (`recognition.lang`) automatikusan követi az aktív nyelvet (`hu-HU`, `de-DE`, `en-US`).
+  - **Elegáns Splash Screen:** Teljes képernyős, letisztult, gombmentes nyitóképernyő Balatoni hullám és fényeffektekkel, 'SioGuide' logóval és nyelvhű alcímmel (*"Müller's AI Concierge · Siófok"*). A felület ~1.6 másodperc után sima 600ms-os `fade-out` átmenettel automatikusan átadja a helyét a chatnek.
+- `frontend/tailwind.config.js`: Bővítve `lake-950` árnyalattal a prémium sötétkék splash-átmenethez.
 
 
