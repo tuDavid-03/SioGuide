@@ -31,7 +31,7 @@ function detectBrowserLanguage() {
  */
 const I18N = {
   hu: {
-    welcome: "Üdvözöllek! 🌊 Én vagyok a **SioGuide**, a Müller's vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy Müller's kedvezmények!",
+    welcome: "Üdvözöllek! Én vagyok a **SioGuide**, a Müller's vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy Müller's kedvezmények!",
     placeholder: "Kérdezz valamit... (pl. Milyen messze van gyalog a Nagystrand?)",
     placeholderListening: "Beszélj most, hallgatlak...",
     send: "Küldés",
@@ -51,7 +51,7 @@ const I18N = {
     voiceTitleInactive: "Beszédfelismerés / Diktálás",
   },
   en: {
-    welcome: "Welcome! 🌊 I am **SioGuide**, the AI concierge for Müller's guesthouses. Ask me anything about Siófok – beaches, restaurants, activities, weather, walking distances, or Müller's discounts!",
+    welcome: "Welcome! I am **SioGuide**, the AI concierge for Müller's guesthouses. Ask me anything about Siófok – beaches, restaurants, activities, weather, walking distances, or Müller's discounts!",
     placeholder: "Ask me anything... (e.g. How far is the Main Beach on foot?)",
     placeholderListening: "Listening, please speak now...",
     send: "Send",
@@ -71,7 +71,7 @@ const I18N = {
     voiceTitleInactive: "Voice recognition / Dictation",
   },
   de: {
-    welcome: "Herzlich willkommen! 🌊 Ich bin **SioGuide**, der KI-Concierge der Müller's Gästehäuser. Frag mich gerne nach Stränden, Restaurants, Sehenswürdigkeiten, Gehdistanzen, Wetter oder Müller's Rabatten!",
+    welcome: "Herzlich willkommen! Ich bin **SioGuide**, der KI-Concierge der Müller's Gästehäuser. Frag mich gerne nach Stränden, Restaurants, Sehenswürdigkeiten, Gehdistanzen, Wetter oder Müller's Rabatten!",
     placeholder: "Frag mich etwas... (z. B. Wie weit ist der Hauptstrand zu Fuß?)",
     placeholderListening: "Ich höre zu, sprich bitte...",
     send: "Senden",
@@ -245,7 +245,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-full max-w-3xl mx-auto px-4 relative">
+    <div className="flex flex-col h-full max-w-3xl mx-auto px-3 sm:px-4 relative">
 
       {/* ── Elegáns Splash Screen (Automatikus eltűnés ~1.6 - 2.2s alatt) ── */}
       {showSplash && (
@@ -261,10 +261,14 @@ export default function App() {
           </div>
 
           <div className="relative z-10 flex flex-col items-center text-center px-6">
-            {/* Lebegő / pulzáló ikon */}
+            {/* Hivatalos SioGuide PWA logó */}
             <div className="relative mb-6">
-              <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-lake-600 via-lake-500 to-cyan-400 flex items-center justify-center shadow-2xl shadow-cyan-500/30 ring-4 ring-white/10 animate-bounce">
-                <span className="text-5xl drop-shadow select-none">🌊</span>
+              <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl shadow-cyan-500/30 ring-4 ring-white/20 animate-bounce bg-lake-950 flex items-center justify-center">
+                <img
+                  src="/pwa-192x192.png"
+                  alt="SioGuide Logo"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="absolute -inset-2 rounded-3xl bg-cyan-400/20 blur-xl -z-10 animate-pulse" />
             </div>
@@ -297,63 +301,91 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Header ── */}
-      <header className="py-5 border-b border-lake-200 flex items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-lake-600 flex items-center justify-center shadow">
-            <span className="text-white text-xl">🌊</span>
+      {/* ── Header (Reszponzív mobil + desktop) ── */}
+      <header className="py-3 sm:py-5 border-b border-lake-200 shrink-0">
+        <div className="flex items-center justify-between gap-2.5 sm:gap-3">
+          {/* Bal oldal: Logó + Név + Rövid alcím */}
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-xs border border-lake-200 shrink-0 bg-lake-900">
+              <img
+                src="/pwa-192x192.png"
+                alt="SioGuide"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-lake-900 leading-tight truncate">
+                SioGuide
+              </h1>
+              <p className="text-[11px] sm:text-xs text-lake-500 truncate max-w-[170px] xs:max-w-[220px] sm:max-w-none">
+                {t.subTitle}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-lake-900 leading-tight">SioGuide</h1>
-            <p className="text-xs text-lake-500">{t.subTitle}</p>
+
+          {/* Jobb oldal: Nyelvváltó + (Desktopon badge-ek) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Nyelvváltó gombok (HU / EN / DE) */}
+            <div className="flex items-center bg-lake-100/80 rounded-xl p-0.5 sm:p-1 border border-lake-200/80 shadow-xs">
+              {['hu', 'en', 'de'].map(l => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => changeLanguage(l)}
+                  className={`px-1.5 sm:px-2 py-0.5 rounded-lg text-[11px] sm:text-xs font-bold uppercase transition-all ${
+                    currentLang === l
+                      ? 'bg-white text-lake-800 shadow-xs scale-100'
+                      : 'text-lake-600 hover:text-lake-900 opacity-70 hover:opacity-100'
+                  }`}
+                  title={`Nyelv váltása: ${l.toUpperCase()}`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+
+            {/* Asztali nézetű jelvények */}
+            <div className="hidden md:flex items-center gap-2">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 shadow-xs">
+                <span>🎁</span>
+                <span>{t.badgeDiscounts}</span>
+              </span>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1 shadow-xs">
+                <span>🎙️</span>
+                <span>{t.badgeVoice}</span>
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Nyelvváltó gombok (HU / EN / DE) */}
-          <div className="flex items-center bg-lake-100/80 rounded-xl p-1 border border-lake-200/80 shadow-xs">
-            {['hu', 'en', 'de'].map(l => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => changeLanguage(l)}
-                className={`px-2 py-0.5 rounded-lg text-xs font-bold uppercase transition-all ${
-                  currentLang === l
-                    ? 'bg-white text-lake-800 shadow-xs scale-100'
-                    : 'text-lake-600 hover:text-lake-900 opacity-70 hover:opacity-100'
-                }`}
-                title={`Nyelv váltása: ${l.toUpperCase()}`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-
-          <div className="hidden sm:flex items-center gap-2">
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 shadow-xs">
-              <span>🎁</span>
-              <span>{t.badgeDiscounts}</span>
-            </span>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1 shadow-xs">
-              <span>🎙️</span>
-              <span>{t.badgeVoice}</span>
-            </span>
-          </div>
+        {/* Mobilon megjelenő kompakt státusz sáv közvetlenül a fejléc alatt */}
+        <div className="flex md:hidden items-center gap-1.5 mt-2 pt-2 border-t border-lake-100/60 overflow-x-auto no-scrollbar">
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 border border-amber-200/60 flex items-center gap-1 shrink-0">
+            <span>🎁</span>
+            <span>{t.badgeDiscounts}</span>
+          </span>
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100/80 text-purple-800 border border-purple-200/60 flex items-center gap-1 shrink-0">
+            <span>🎙️</span>
+            <span>{t.badgeVoice}</span>
+          </span>
+          <span className="text-[10px] font-medium text-lake-400 ml-auto shrink-0">
+            Müller's AI
+          </span>
         </div>
       </header>
 
       {/* ── Üzenetek ── */}
-      <main className="flex-1 overflow-y-auto py-6 space-y-6">
+      <main className="flex-1 overflow-y-auto py-4 sm:py-6 space-y-4 sm:space-y-6">
         {messages.map((msg, i) => (
-          <div key={i} className="msg-enter space-y-3">
+          <div key={i} className="msg-enter space-y-2.5 sm:space-y-3">
             <ChatMessage role={msg.role} text={msg.text} />
             {msg.sources?.length > 0 && (
-              <div className="pl-10">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-lake-500 uppercase tracking-wide">
+              <div className="pl-2 sm:pl-10">
+                <div className="flex items-center justify-between mb-2 gap-2">
+                  <p className="text-xs font-semibold text-lake-500 uppercase tracking-wide truncate">
                     {t.sourcesTitle}
                   </p>
-                  <span className="text-[11px] text-gray-400">
+                  <span className="text-[11px] text-gray-400 shrink-0">
                     {t.sourcesHint}
                   </span>
                 </div>
@@ -372,11 +404,15 @@ export default function App() {
         ))}
 
         {loading && (
-          <div className="msg-enter flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-lake-600 flex items-center justify-center shrink-0">
-              <span className="text-white text-sm">🤖</span>
+          <div className="msg-enter flex items-start gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 rounded-full overflow-hidden shadow-xs shrink-0 border border-lake-200/60 bg-lake-900">
+              <img
+                src="/pwa-192x192.png"
+                alt="SioGuide"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-lake-100">
+            <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-xs border border-lake-100">
               <LoadingDots />
             </div>
           </div>
@@ -391,36 +427,38 @@ export default function App() {
         <div ref={bottomRef} />
       </main>
 
-      {/* ── Input ── */}
-      <footer className="py-4 border-t border-lake-200 shrink-0">
+      {/* ── Input (Mobil-optimalizált elrendezés) ── */}
+      <footer className="py-2.5 sm:py-4 border-t border-lake-200 shrink-0 bg-lake-50/50">
         {/* Hallgatózási állapot jelző sáv */}
         {isListening && (
-          <div className="flex items-center gap-2 mb-2 px-3.5 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-pulse shadow-xs">
+          <div className="flex items-center gap-2 mb-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-pulse shadow-xs">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping shrink-0" />
-            <span>{t.listeningBar}</span>
+            <span className="truncate">{t.listeningBar}</span>
             <button
               type="button"
               onClick={toggleListening}
-              className="ml-auto text-rose-600 hover:text-rose-900 underline text-[11px]"
+              className="ml-auto text-rose-600 hover:text-rose-900 underline text-[11px] shrink-0 font-bold"
             >
               {t.listeningStop}
             </button>
           </div>
         )}
 
-        <form onSubmit={sendMessage} className="flex gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder={isListening ? t.placeholderListening : t.placeholder}
-            disabled={loading}
-            className="flex-1 rounded-xl border border-lake-200 bg-white px-4 py-3
-                       text-sm text-gray-800 placeholder-gray-400
-                       focus:outline-none focus:ring-2 focus:ring-lake-400 focus:border-transparent
-                       disabled:opacity-50 shadow-sm"
-          />
+        <form onSubmit={sendMessage} className="flex items-center gap-1.5 sm:gap-2">
+          <div className="relative flex-1 min-w-0">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder={isListening ? t.placeholderListening : t.placeholder}
+              disabled={loading}
+              className="w-full rounded-xl border border-lake-200 bg-white px-3 sm:px-4 py-2.5 sm:py-3
+                         text-xs sm:text-sm text-gray-800 placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-lake-400 focus:border-transparent
+                         disabled:opacity-50 shadow-xs"
+            />
+          </div>
 
           {/* Mikrofon Gomb (Web Speech API) */}
           <button
@@ -428,27 +466,27 @@ export default function App() {
             onClick={toggleListening}
             disabled={loading}
             title={isListening ? t.voiceTitleActive : t.voiceTitleInactive}
-            className={`px-3.5 py-3 rounded-xl font-semibold text-sm transition-all shadow-sm flex items-center justify-center shrink-0
+            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl font-semibold text-sm transition-all shadow-xs flex items-center justify-center shrink-0
               ${isListening
                 ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-200'
                 : 'bg-white hover:bg-lake-50 text-lake-600 border border-lake-200 hover:border-lake-400 active:scale-95'
               } disabled:opacity-40 disabled:cursor-not-allowed`}
           >
-            <span className="text-base">{isListening ? '🛑' : '🎙️'}</span>
+            <span className="text-base select-none">{isListening ? '🛑' : '🎙️'}</span>
           </button>
 
           {/* Küldés Gomb */}
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="px-5 py-3 rounded-xl bg-lake-600 text-white font-semibold text-sm
-                       hover:bg-lake-700 active:scale-95 transition-all shadow-sm
+            className="h-10 sm:h-11 px-3 sm:px-5 rounded-xl bg-lake-600 text-white font-semibold text-xs sm:text-sm
+                       hover:bg-lake-700 active:scale-95 transition-all shadow-xs flex items-center justify-center shrink-0
                        disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {t.send}
+            <span>{t.send}</span>
           </button>
         </form>
-        <p className="mt-2 text-center text-xs text-lake-400">
+        <p className="mt-1.5 sm:mt-2 text-center text-[10px] sm:text-xs text-lake-400 truncate">
           {t.footerInfo}
         </p>
       </footer>

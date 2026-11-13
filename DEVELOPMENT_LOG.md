@@ -320,4 +320,23 @@ Felhasználói kérdés
   - PWA és mobil viewport meta címkék hozzáadva (`theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `apple-touch-icon`).
 - `frontend/dist/`: Sikeres PWA build precache service workerrel (`dist/sw.js`, `dist/manifest.webmanifest`, `dist/registerSW.js`).
 
+---
+
+### 6.6 – UI Finomhangolás & Mobil Reszponzivitás
+
+**Dátum:** 2026-11-13
+
+- `frontend/src/App.jsx` & `frontend/src/components/ChatMessage.jsx`:
+  - **Saját PWA logó integrálása:** Eltávolítva a generikus hullám (`🌊`) és robot (`🤖`) emojik. Helyettük a `/pwa-192x192.png` logó került be a fejlécbe, az AI chat avatárokba, a válasz-töltő indikátorba, valamint a Splash Screen-re (`w-24 h-24` méretben, elegáns animációval).
+  - **Üdvözlő szövegek frissítése:** Az I18N szótár (`hu`, `en`, `de`) üdvözlő mondataiból eltávolítva a hullám emoji a letisztult, professzionális arculat érdekében.
+  - **Mobil Fejléc Optimalizálás:**
+    - Kisebb, reszponzív méretek (`py-3 sm:py-5`, `text-lg sm:text-xl`).
+    - Cím és hosszú alcím szöveglevágás (`truncate`, `max-w`), hogy kis kijelzőkön (360-390px) se csússzon rá a nyelvválasztóra.
+    - Mobilon közvetlenül a fejléc alá került egy kompakt, görgethető státusz sáv a kedvezmény és hangvezérlés badge-eknek.
+  - **Mobil Input és Gombok Tisztítása:**
+    - A mikrofon gomb fix méretű (`w-10 h-10 sm:w-11 sm:h-11 shrink-0`), a küldés gomb szintén nem nyomódik össze (`h-10 sm:h-11 shrink-0`).
+    - Az input mező rugalmas (`flex-1 min-w-0`), kényelmes margókkal és touch targettel.
+    - A forráskártyák bal margója mobilon `pl-2 sm:pl-10`-re optimalizálva, így nem veszít hasznos felületet.
+
+
 
