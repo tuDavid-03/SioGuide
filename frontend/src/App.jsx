@@ -2,22 +2,24 @@ import { useState, useRef, useEffect } from 'react'
 import ChatMessage from './components/ChatMessage'
 import SourceCard from './components/SourceCard'
 import LoadingDots from './components/LoadingDots'
+import PlaceModal from './components/PlaceModal'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const WELCOME_MESSAGE = {
   role: 'assistant',
-  text: 'Üdvözöllek! 🌊 Én vagyok a **SioGuide**, a Müller\'s vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás vagy szállásinformációk!',
+  text: 'Üdvözöllek! 🌊 Én vagyok a **SioGuide**, a Müller\'s vendégházak AI asszisztense. Kérdezz bármit Siófokról – strandok, éttermek, programok, időjárás, gyalogos távolságok vagy szállásinformációk!',
   sources: [],
 }
 
 export default function App() {
-  const [messages, setMessages] = useState([WELCOME_MESSAGE])
-  const [input, setInput]       = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState(null)
-  const bottomRef               = useRef(null)
-  const inputRef                = useRef(null)
+  const [messages, setMessages]           = useState([WELCOME_MESSAGE])
+  const [input, setInput]                 = useState('')
+  const [loading, setLoading]             = useState(false)
+  const [error, setError]                 = useState(null)
+  const [selectedPlace, setSelectedPlace] = useState(null)
+  const bottomRef                         = useRef(null)
+  const inputRef                          = useRef(null)
 
   // Automatikus görgetés az utolsó üzenetre
   useEffect(() => {
@@ -63,13 +65,25 @@ export default function App() {
     <div className="flex flex-col h-full max-w-3xl mx-auto px-4">
 
       {/* ── Header ── */}
-      <header className="py-5 border-b border-lake-200 flex items-center gap-3 shrink-0">
-        <div className="w-10 h-10 rounded-xl bg-lake-600 flex items-center justify-center shadow">
-          <span className="text-white text-xl">🌊</span>
+      <header className="py-5 border-b border-lake-200 flex items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-lake-600 flex items-center justify-center shadow">
+            <span className="text-white text-xl">🌊</span>
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-lake-900 leading-tight">SioGuide</h1>
+            <p className="text-xs text-lake-500">Müller's Vendégházak · Agentic AI Asszisztens</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl font-bold text-lake-900 leading-tight">SioGuide</h1>
-          <p className="text-xs text-lake-500">Müller's Vendégházak · AI Asszisztens</p>
+        <div className="hidden sm:flex items-center gap-2">
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 shadow-xs">
+            <span>🎁</span>
+            <span>Partnerkedvezmények</span>
+          </span>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-lake-100 text-lake-800 border border-lake-200 flex items-center gap-1 shadow-xs">
+            <span>🗺️</span>
+            <span>Google Maps</span>
+          </span>
         </div>
       </header>
 
@@ -80,12 +94,21 @@ export default function App() {
             <ChatMessage role={msg.role} text={msg.text} />
             {msg.sources?.length > 0 && (
               <div className="pl-10">
-                <p className="text-xs font-semibold text-lake-400 uppercase tracking-wide mb-2">
-                  Felhasznált helyszínek
-                </p>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-lake-500 uppercase tracking-wide">
+                    Felhasznált helyszínek & Kedvezmények
+                  </p>
+                  <span className="text-[11px] text-gray-400">
+                    Kattints a kártyára a térképért
+                  </span>
+                </div>
+                <div className="grid gap-2.5 sm:grid-cols-2">
                   {msg.sources.map(src => (
-                    <SourceCard key={src.id} source={src} />
+                    <SourceCard
+                      key={src.id}
+                      source={src}
+                      onClick={() => setSelectedPlace(src)}
+                    />
                   ))}
                 </div>
               </div>
@@ -121,7 +144,7 @@ export default function App() {
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Pl. Hol eszem jót Siófokon este?"
+            placeholder="Pl. Milyen messze van gyalog a Nagystrand? Hol van kedvezményünk?"
             disabled={loading}
             className="flex-1 rounded-xl border border-lake-200 bg-white px-4 py-3
                        text-sm text-gray-800 placeholder-gray-400
@@ -139,9 +162,15 @@ export default function App() {
           </button>
         </form>
         <p className="mt-2 text-center text-xs text-lake-400">
-          Válaszok a Supabase pgvector + Gemini RAG rendszerből
+          Supabase pgvector (768 dim) · Gemini 3.8 Flash Agentic Chat · Google Maps API
         </p>
       </footer>
+
+      {/* ── Részletek & Interaktív Google Térkép Modal ── */}
+      <PlaceModal
+        place={selectedPlace}
+        onClose={() => setSelectedPlace(null)}
+      />
 
     </div>
   )

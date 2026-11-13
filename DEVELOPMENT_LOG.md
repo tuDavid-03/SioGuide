@@ -229,3 +229,24 @@ Felhasználói kérdés
 - Automatikus függvényhívás engedélyezve: `automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=False)`.
 - RAG kontextus dinamikusan tartalmazza a `Müller's Kedvezmény` adatokat minden lekért helyszínhez.
 
+---
+
+### 5.3 – Frontend Interaktív UI: PlaceModal & Kedvezmény Badge-ek
+
+**Dátum:** 2026-11-13
+
+- `frontend/src/components/SourceCard.jsx`:
+  - Kattinthatóvá téve az egész kártya (`cursor-pointer`, `onClick`, billentyűzet-navigáció `Enter`/`Space`).
+  - Animált, figyelemfelkeltő `🎁 Müller's Kedvezmény` arany-rózsaszín badge megjelenítése, ha elérhető a helyszínhez `discount_info`.
+  - Alsó térkép indikátor sáv hozzáadva (`🗺️ Térkép →`).
+- `frontend/src/components/PlaceModal.jsx`:
+  - Felugró, sötétített hátterű modális ablak Tailwind-del és sima `fadeIn` + `scaleUp` animációval.
+  - Helyszín neve, kategória ikonja, leírása és százalékos egyezése.
+  - Kiemelt Müller's partnerkedvezmény blokk részletes felmutatási instrukcióval.
+  - Beágyazott interaktív Google Térkép iframe a `VITE_GOOGLE_MAPS_API_KEY` segítségével (`https://www.google.com/maps/embed/v1/place`).
+  - Külső útvonaltervezési gomb és bezárási lehetőség (X gomb, Escape billentyű vagy háttérre kattintás).
+- `frontend/src/App.jsx`:
+  - `selectedPlace` állapot kezelése és összekötése a `SourceCard` kattintásokkal.
+  - Frissített fejléc jelvények (Partnerkedvezmények & Google Maps).
+
+

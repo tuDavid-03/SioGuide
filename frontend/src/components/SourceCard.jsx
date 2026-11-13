@@ -1,6 +1,8 @@
 /**
- * SourceCard – RAG forrás kártya profi hover effektekkel
- * Megjeleníti a helyszín nevét, kategóriáját, leírását és hasonlósági %-át.
+ * SourceCard – Interaktív, kattintható RAG forrás kártya
+ * - Megjeleníti a helyszín nevét, kategóriáját, leírását és hasonlósági %-át
+ * - Kiemelt '🎁 Kedvezmény' badge, ha elérhető Müller's partnerkedvezmény
+ * - Rákattintva megnyitja a PlaceModal-t interaktív Google Térképpel
  */
 
 // Kategória → emoji + háttérszín
@@ -32,44 +34,64 @@ function getSimilarityStyle(sim) {
   return                  { bar: 'bg-gray-300',   text: 'text-gray-500',   label: 'Gyenge'         }
 }
 
-export default function SourceCard({ source }) {
-  const { name, category, description, similarity } = source
+export default function SourceCard({ source, onClick }) {
+  const { name, category, description, similarity, discount_info } = source
   const pct    = Math.round(similarity * 100)
   const style  = getStyle(category)
   const simSty = getSimilarityStyle(similarity)
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
       className={`
         group relative overflow-hidden rounded-2xl border ${style.border} ${style.bg}
-        p-3.5 shadow-sm cursor-default select-none
+        p-3.5 shadow-sm cursor-pointer select-none text-left
         transition-all duration-200
-        hover:shadow-lg hover:-translate-y-0.5 hover:border-opacity-80
+        hover:shadow-lg hover:-translate-y-1 hover:border-lake-400
+        active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-lake-400
       `}
     >
-      {/* Dekoratív háttér-gradient hover-re */}
+      {/* Dekoratív fényeffekt hoverre */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                      bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
+                      bg-gradient-to-br from-white/70 via-transparent to-lake-100/30 pointer-events-none" />
 
-      {/* Fejléc: ikon + név + kategória badge */}
+      {/* Kiemelt Müller's Kedvezmény Badge (ha van) */}
+      {discount_info && (
+        <div className="mb-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full
+                           bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-white shadow-sm
+                           ring-1 ring-amber-300 animate-pulse">
+            <span>🎁</span>
+            <span>Müller's Kedvezmény</span>
+          </span>
+        </div>
+      )}
+
+      {/* Fejléc: ikon + név + kategória */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xl shrink-0 drop-shadow-sm"
-                role="img" aria-label={category}>
+          <span className="text-xl shrink-0 drop-shadow-sm" role="img" aria-label={category}>
             {style.icon}
           </span>
           <div className="min-w-0">
-            <p className="font-bold text-xs text-gray-900 truncate leading-tight">
+            <p className="font-bold text-xs text-gray-900 truncate leading-tight group-hover:text-lake-700 transition-colors">
               {name}
             </p>
-            <span className={`inline-block mt-0.5 text-[10px] font-semibold px-1.5 py-0.5
-                              rounded-full capitalize ${style.badge}`}>
+            <span className={`inline-block mt-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full capitalize ${style.badge}`}>
               {category}
             </span>
           </div>
         </div>
 
-        {/* Hasonlósági % – kiemelve */}
+        {/* Hasonlósági % */}
         <div className="shrink-0 text-right">
           <span className={`text-lg font-extrabold tabular-nums ${simSty.text}`}>
             {pct}%
@@ -89,10 +111,15 @@ export default function SourceCard({ source }) {
       </div>
 
       {/* Leírás előnézet */}
-      <p className="text-[11px] text-gray-600 leading-relaxed line-clamp-2
-                    group-hover:line-clamp-none transition-all duration-200">
+      <p className="text-[11px] text-gray-600 leading-relaxed line-clamp-2">
         {description}
       </p>
+
+      {/* Kattintás jelző alsó sáv */}
+      <div className="mt-2.5 pt-2 border-t border-gray-200/50 flex items-center justify-between text-[10px] text-lake-600 font-medium">
+        <span>Kattints a részletekért</span>
+        <span className="group-hover:translate-x-1 transition-transform">🗺️ Térkép &rarr;</span>
+      </div>
     </div>
   )
 }
