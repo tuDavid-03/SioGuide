@@ -117,6 +117,9 @@ export default function App() {
   const [isSavedPlansOpen, setIsSavedPlansOpen] = useState(false)
   const [savedPlansCount, setSavedPlansCount]   = useState(0)
 
+  // Útiterv-kosár (Trip Cart) a kiválasztott helyszínek gyűjtésére
+  const [tripCart, setTripCart]                 = useState([])
+
   // Splash Screen állapotok (1.6s megjelenítés + 0.6s sima fade-out)
   const [showSplash, setShowSplash]           = useState(true)
   const [splashFading, setSplashFading]       = useState(false)
@@ -236,9 +239,20 @@ export default function App() {
     submitQuestion(queryText)
   }
 
-  // Helyszín beépítése a mai programtervbe a SourceCard '➕ Tervhez' gombjából
-  function handleAddToPlan(placeName) {
-    submitQuestion(`Kérlek, építsd be a mai programtervembe ezt a helyszínt is: ${placeName}`)
+  // Helyszín hozzáadása az útiterv-kosárhoz (Trip Cart)
+  function handleAddToCart(placeName) {
+    setTripCart(prev => {
+      if (prev.includes(placeName)) return prev
+      return [...prev, placeName]
+    })
+  }
+
+  // Terv generálása a kosárba gyűjtött helyszínekből
+  function handleGenerateCartPlan() {
+    if (tripCart.length === 0) return
+    const placesStr = tripCart.join(', ')
+    setTripCart([])
+    submitQuestion(`Kérlek, készíts nekem egy logikus programtervet és útvonalat az alábbi helyszínekből: ${placesStr}. Számolj sétaidőkkel és add meg a Maps linket is!`)
   }
 
   // Mikrofon / Hangfelismerés (Web Speech API)
@@ -476,7 +490,8 @@ export default function App() {
                       key={src.id}
                       source={src}
                       onClick={() => setSelectedPlace(src)}
-                      onAddToPlan={handleAddToPlan}
+                      onAddToCart={handleAddToCart}
+                      isInCart={tripCart.includes(src.name)}
                     />
                   ))}
                 </div>
@@ -511,6 +526,45 @@ export default function App() {
 
       {/* ── Input (Mobil-optimalizált elrendezés + alsó térköz) ── */}
       <footer className="pt-2.5 pb-6 sm:pb-8 border-t border-lake-200 shrink-0 bg-lake-50/50">
+        {/* ── Útiterv-Kosár (Trip Cart Bar) ── */}
+        {tripCart.length > 0 && (
+          <div className="mb-2.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-lake-950 via-lake-900 to-lake-950 text-white shadow-lg border border-lake-700/60 flex items-center justify-between gap-2 animate-scaleUp">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-6 h-6 rounded-full bg-cyan-400 text-lake-950 font-black text-xs flex items-center justify-center shrink-0">
+                {tripCart.length}
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-white truncate">
+                  Kiválasztva: {tripCart.length} helyszín
+                </p>
+                <p className="text-[10px] text-lake-300 truncate max-w-[170px] xs:max-w-[220px] sm:max-w-xs">
+                  {tripCart.join(', ')}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setTripCart([])}
+                className="px-2 py-1 rounded-xl text-xs text-lake-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                title="Kijelölések törlése"
+              >
+                Mégse
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGenerateCartPlan}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-lake-950 font-extrabold text-xs shadow-md active:scale-95 transition-all cursor-pointer"
+              >
+                <span>🗺️</span>
+                <span>Terv Generálása</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Hallgatózási állapot jelző sáv */}
         {isListening && (
           <div className="flex items-center gap-2 mb-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold animate-pulse shadow-xs">

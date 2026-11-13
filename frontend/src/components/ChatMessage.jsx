@@ -15,8 +15,23 @@ function parseSimpleMarkdown(text) {
     .replace(/\n/g,            '<br />')
 }
 
+/**
+ * Ellenőrzi, hogy az üzenet komplex útiterv-e vagy mentésre érdemes válasz.
+ * Csak akkor engedélyezi a '💾 Terv mentése' gombot, ha:
+ * - tartalmazza a 'Google Maps' vagy 'Útvonal' szavakat, VAGY
+ * - hossza > 300 karakter ÉS tartalmazza a 'program' vagy 'terv' szavakat.
+ */
+function isSavablePlan(msgText) {
+  if (!msgText) return false
+  const lower = msgText.toLowerCase()
+  const hasMapsOrRoute = lower.includes('google maps') || lower.includes('útvonal') || lower.includes('utvonal')
+  const isLongPlan = msgText.length > 300 && (lower.includes('program') || lower.includes('terv'))
+  return hasMapsOrRoute || isLongPlan
+}
+
 export default function ChatMessage({ role, text, onSavePlan }) {
   const isUser = role === 'user'
+  const canSave = !isUser && isSavablePlan(text)
 
   const [saved, setSaved] = useState(() => {
     if (isUser || typeof window === 'undefined') return false
@@ -81,8 +96,8 @@ export default function ChatMessage({ role, text, onSavePlan }) {
           dangerouslySetInnerHTML={{ __html: parseSimpleMarkdown(text) }}
         />
 
-        {/* AI üzenet alatti mentés gyorsgomb */}
-        {!isUser && text && (
+        {/* AI üzenet alatti mentés gyorsgomb (intelligens szűréssel) */}
+        {canSave && (
           <div className="flex items-center justify-start pt-0.5">
             <button
               type="button"

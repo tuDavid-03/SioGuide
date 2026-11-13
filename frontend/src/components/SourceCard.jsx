@@ -38,7 +38,7 @@ function getSimilarityStyle(sim) {
   return                  { bar: 'bg-gray-300',   text: 'text-gray-500',   label: 'Gyenge'         }
 }
 
-export default function SourceCard({ source, onClick, onAddToPlan }) {
+export default function SourceCard({ source, onClick, onAddToCart, isInCart }) {
   const { name, category, description, similarity, discount_info } = source
   const pct    = Math.round(similarity * 100)
   const style  = getStyle(category)
@@ -126,15 +126,22 @@ export default function SourceCard({ source, onClick, onAddToPlan }) {
         </span>
         <button
           type="button"
+          disabled={isInCart}
           onClick={(e) => {
             e.stopPropagation()
-            onAddToPlan?.(name)
+            if (!isInCart) {
+              onAddToCart?.(name)
+            }
           }}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-lake-600 hover:bg-lake-700 text-white font-semibold text-[10px] shadow-xs active:scale-95 transition-all cursor-pointer z-10"
-          title={`"${name}" beépítése a mai programtervbe`}
+          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold text-[10px] shadow-xs transition-all z-10 ${
+            isInCart
+              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300/80 cursor-default opacity-90'
+              : 'bg-lake-600 hover:bg-lake-700 active:scale-95 text-white cursor-pointer'
+          }`}
+          title={isInCart ? `"${name}" hozzáadva a kiválasztott helyszínekhez` : `"${name}" hozzáadása a programterv-kosárhoz`}
         >
-          <span>➕</span>
-          <span>Tervhez</span>
+          <span>{isInCart ? '✓' : '➕'}</span>
+          <span>{isInCart ? 'Hozzáadva' : 'Tervhez'}</span>
         </button>
       </div>
     </div>

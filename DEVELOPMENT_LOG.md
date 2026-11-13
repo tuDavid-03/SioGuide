@@ -376,3 +376,22 @@ Felhasználói kérdés
 - `backend/main.py`:
   - A Gemini `system_instruction` promptja kiegészítve szigorú utasítással: többállomásos útiterv összeállításakor a válasz végén kötelező legenerálni a kattintható Google Maps útvonaltervező linket az állomásokkal összefűzve: `[🗺️ Útvonal megnyitása Google Maps-ben](https://www.google.com/maps/dir/Indulási+cím/1.+állomás+neve+Siófok/2.+állomás+neve+Siófok)`.
 
+---
+
+### 6.9 – Intelligens Mentés Gomb és Útiterv-Kosár (Trip Cart)
+
+**Dátum:** 2026-11-13
+
+- `frontend/src/components/ChatMessage.jsx`:
+  - **Intelligens Mentés Gomb Szűrés (`isSavablePlan`):** A `💾 Terv mentése` gomb mostantól nem jelenik meg minden üzenet alatt (pl. az üdvözlésnél és egyszerű válaszoknál). Kizárólag akkor renderelődik, ha a válasz tartalmazza a `Google Maps` vagy `Útvonal` kulcsszavakat, vagy ha a szöveg hossza meghaladja a 300 karaktert és szerepel benne a `program` vagy `terv` szó.
+- `frontend/src/components/SourceCard.jsx`:
+  - A `➕ Tervhez` gomb kattintásra nem küld azonnal chat üzenetet, hanem a helyszínt hozzáadja a `tripCart` kosárhoz.
+  - A gomb állapota dinamikusan átvált `✓ Hozzáadva` jelzésre (zöld/emerald háttérrel és letiltott kattintással).
+- `frontend/src/App.jsx`:
+  - Bevezetve a `tripCart` állapot a kiválasztott helyszínek gyűjtésére.
+  - **Kosár Sáv (Floating Action Bar / Checkout):** Ha a `tripCart` nem üres, az input mező felett megjelenik egy sötétkék prémium sáv a kiválasztott helyek számával, a helyek felsorolásával, egy *Mégse* gombbal és a kiemelt arany **`🗺️ Terv Generálása`** gombbal.
+  - Rákattintva a kosár kiürül, és automatikusan elküldi az összefűzött promptot a chatnek: *"Kérlek, készíts nekem egy logikus programtervet és útvonalat az alábbi helyszínekből: [helyszínek]. Számolj sétaidőkkel és add meg a Maps linket is!"*.
+- `frontend/src/components/SavedPlansModal.jsx`:
+  - Megosztási formátum egységesítve: a szöveg automatikusan a `🌊 SioGuide Programterv Siófok:\n\n` fejléccel kezdődik és a `\n\nKészült a SioGuide Müller's AI Asszisztenssel.` zárással végződik.
+
+
