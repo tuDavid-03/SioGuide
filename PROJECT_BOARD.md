@@ -40,4 +40,10 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 - [x] Fázis 6.6.1: UI takarítás és Mentett Programtervek (LocalStorage terv mentés, SavedPlansModal & Web Share API megosztás, Kedvezmények gyorsgomb)
 - [x] Fázis 6.8: UX Fixek, Maps Útvonal Link és 'Tervhez adás' funkció (alsó térköz, mentés gomb szinkronizáció CustomEvent-tel, [+] Tervhez gyorsgomb a kártyákon, Google Maps többállomásos útvonal link a backendben)
 - [x] Fázis 6.9: Intelligens Mentés Gomb és Útiterv-Kosár (Trip Cart) (intelligens szűrés ChatMessage-ben, helyszín kosárba gyűjtés SourceCard-on, lebegő Checkout sáv és automatikus prompt generálás)
+- [x] Fázis 6.9.1: UI Finomítások és Béta 2 Véglegesítés (természetes kosár prompt, azonnali megosztás gomb a chatben, 📍 vízjel fejléc formázás)
+
+## 6. Jövőbeli Fejlesztések (v2.0)
+- [ ] Fázis 6.7: Valós idejű BAHART hajómenetrend integráció (siófoki kikötői járatok lekérdezése)
+- [ ] PMS szállásfoglalási motor közvetlen kétirányú szinkronizáció
+- [ ] Valós idejű balatoni viharjelzés és Push értesítések PWA-ban
 

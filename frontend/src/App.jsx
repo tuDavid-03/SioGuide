@@ -252,7 +252,7 @@ export default function App() {
     if (tripCart.length === 0) return
     const placesStr = tripCart.join(', ')
     setTripCart([])
-    submitQuestion(`Kérlek, készíts nekem egy logikus programtervet és útvonalat az alábbi helyszínekből: ${placesStr}. Számolj sétaidőkkel és add meg a Maps linket is!`)
+    submitQuestion(`Szeretnék egy optimalizált programtervet az alábbi helyszínekből: ${placesStr}. Kérlek, oszd be logikusan, számolj a sétaidőkkel, és a végén adj egy kattintható Maps linket!`)
   }
 
   // Mikrofon / Hangfelismerés (Web Speech API)

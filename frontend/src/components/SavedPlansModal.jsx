@@ -78,7 +78,7 @@ export default function SavedPlansModal({ isOpen, onClose, onPlansChange }) {
 
   // Terv megosztása (Web Share API vagy vágólap fallback)
   async function handleShare(plan) {
-    const shareText = `🌊 SioGuide Programterv Siófok:\n\n${plan.text}\n\nKészült a SioGuide Müller's AI Asszisztenssel.`
+    const shareText = `📍 SioGuide Programterv - Siófok:\n\n${plan.text}\n\nKészült a SioGuide Müller's AI Asszisztenssel.`
     const shareData = {
       title: 'SioGuide Balatoni Programterv',
       text: shareText,

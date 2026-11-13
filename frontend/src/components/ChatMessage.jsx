@@ -33,7 +33,8 @@ export default function ChatMessage({ role, text, onSavePlan }) {
   const isUser = role === 'user'
   const canSave = !isUser && isSavablePlan(text)
 
-  const [saved, setSaved] = useState(() => {
+  const [copied, setCopied] = useState(false)
+  const [saved, setSaved]   = useState(() => {
     if (isUser || typeof window === 'undefined') return false
     try {
       const existing = JSON.parse(localStorage.getItem('sioguide_saved_plans') || '[]')
@@ -69,6 +70,35 @@ export default function ChatMessage({ role, text, onSavePlan }) {
     }
   }
 
+  // Terv megosztása közvetlenül a chatből (Web Share API vagy vágólap fallback)
+  async function handleShare() {
+    const shareText = `📍 SioGuide Programterv - Siófok:\n\n${text}\n\nKészült a SioGuide Müller's AI Asszisztenssel.`
+    const shareData = {
+      title: 'SioGuide Balatoni Programterv',
+      text: shareText,
+    }
+
+    if (navigator?.share && navigator?.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData)
+        return
+      } catch (err) {
+        if (err.name === 'AbortError') return
+      }
+    }
+
+    // Fallback: Vágólapra másolás
+    if (navigator?.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareText)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2500)
+      } catch {
+        alert('Nem sikerült vágólapra másolni.')
+      }
+    }
+  }
+
   return (
     <div className={`flex items-start gap-2.5 sm:gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       {/* Avatar */}
@@ -96,21 +126,37 @@ export default function ChatMessage({ role, text, onSavePlan }) {
           dangerouslySetInnerHTML={{ __html: parseSimpleMarkdown(text) }}
         />
 
-        {/* AI üzenet alatti mentés gyorsgomb (intelligens szűréssel) */}
+        {/* AI üzenet alatti mentés és megosztás gyorsgombok (intelligens szűréssel) */}
         {canSave && (
-          <div className="flex items-center justify-start pt-0.5">
+          <div className="flex items-center justify-start gap-1.5 pt-0.5">
+            {/* Mentés gomb */}
             <button
               type="button"
               onClick={handleSave}
               className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-lg transition-all shadow-2xs ${
                 saved
                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80 cursor-default'
-                  : 'bg-lake-50/70 hover:bg-lake-100 text-lake-700 border border-lake-200/60 active:scale-95'
+                  : 'bg-lake-50/70 hover:bg-lake-100 text-lake-700 border border-lake-200/60 active:scale-95 cursor-pointer'
               }`}
               title={saved ? 'Ez a terv el van mentve a mentett tervek közé' : 'Terv mentése a mentett tervek közé'}
             >
               <span>{saved ? '✓' : '💾'}</span>
               <span>{saved ? 'Terv elmentve' : 'Terv mentése'}</span>
+            </button>
+
+            {/* Azonnali Megosztás gomb */}
+            <button
+              type="button"
+              onClick={handleShare}
+              className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-lg transition-all shadow-2xs active:scale-95 cursor-pointer ${
+                copied
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                  : 'bg-lake-50/70 hover:bg-lake-100 text-lake-700 border border-lake-200/60'
+              }`}
+              title="Programterv megosztása barátokkal vagy másolása vágólapra"
+            >
+              <span>{copied ? '✓' : '📤'}</span>
+              <span>{copied ? 'Kimásolva!' : 'Megosztás'}</span>
             </button>
           </div>
         )}

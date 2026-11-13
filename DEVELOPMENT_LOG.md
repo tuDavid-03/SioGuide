@@ -394,4 +394,21 @@ Felhasználói kérdés
 - `frontend/src/components/SavedPlansModal.jsx`:
   - Megosztási formátum egységesítve: a szöveg automatikusan a `🌊 SioGuide Programterv Siófok:\n\n` fejléccel kezdődik és a `\n\nKészült a SioGuide Müller's AI Asszisztenssel.` zárással végződik.
 
+---
+
+### 6.9.1 – UI Finomítások & Béta 2 Véglegesítés
+
+**Dátum:** 2026-11-13
+
+- `frontend/src/App.jsx`:
+  - **Természetesebb Trip Cart Prompt:** A kosár generálásakor beküldött kérés szövege emberibb, elegáns megfogalmazást kapott: *"Szeretnék egy optimalizált programtervet az alábbi helyszínekből: [helyszínek]. Kérlek, oszd be logikusan, számolj a sétaidőkkel, és a végén adj egy kattintható Maps linket!"*.
+- `frontend/src/components/ChatMessage.jsx`:
+  - **Azonnali Megosztás Gomb a Chatben:** Az intelligens `💾 Terv mentése` gomb mellé bekerült egy `📤 Megosztás` gomb is. Így a felhasználó anélkül oszthatja meg a legenerált útitervet a barátaival (Web Share API vagy másolás a vágólapra), hogy először el kellene mentenie a modálba.
+- `frontend/src/components/SavedPlansModal.jsx` & `frontend/src/components/ChatMessage.jsx`:
+  - **Megosztási Vízjel Fejléc:** Eltávolítva a hullám emoji a megosztott szövegből. A megosztás fejléce egységesen és letisztultan: `📍 SioGuide Programterv - Siófok:\n\n`.
+- `PROJECT_BOARD.md`:
+  - Fázis 6.9.1 lezárva (Béta 2 release kész).
+  - A BAHART modul és egyéb távlati funkciók áthelyezve a 'Jövőbeli Fejlesztések (v2.0)' ütemtervbe.
+
+
 
