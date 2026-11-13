@@ -275,14 +275,22 @@ Felhasználói kérdés
 
 ---
 
-### 6.2 – Többnyelvűség és Nyelvi Szabályozás
+### 6.3 – Adatbázis Bővítés & Új Látványosságok (23 Helyszín)
 
 **Dátum:** 2026-11-13
 
-- `backend/main.py`:
-  - Szigorú többnyelvűségi rendszerutasítás hozzáadva a Gemini 3.8 Flash RAG promptjához.
-  - A modell KIZÁRÓLAG azon a nyelven válaszol, amin a kérdés érkezett (pl. HU, EN, DE).
-  - A magyar nyelvű adatbázis-találatok és Müller's partnerkedvezmények automatikus és természetes fordítása a vendég nyelvére, a helyszínnevek (tulajdonnevek) felismerhető megőrzése mellett.
+- `backend/seed.py`:
+  - 5 új siófoki helyszín hozzáadva:
+    - **Penthouse Pub & Bar – Sió Pláza** (szórakozás / biliárd, 10% kedvezmény)
+    - **Roxy Étterem és Kávézó** (étterem a Fő téren, 10% kedvezmény)
+    - **Rózsakert és Hajóállomás Park** (látványosság / park a kikötőben)
+    - **Siófoki Víztorony és Kilátó** (látványosság / kávézó, 15% kedvezmény)
+    - **Marci Reggeliző és Brunch Bár** (reggeliző / kávézó, ingyenes kávé/limonádé)
+  - Sikeresen lefutott a Supabase újrafeltöltése és vektorizálása (`gemini-embedding-001`, 768 dimenzió).
+  - Összesen 23 helyszín él az adatbázisban, köztük 11 kiemelt Müller's partnerkedvezménnyel.
+- `frontend/src/components/SourceCard.jsx` & `PlaceModal.jsx`:
+  - Kiegészítve az új kategóriák stílusaival és egyedi emoji ikonjaival (🎱 biliárd, 🌹 park, 🗼 víztorony, ☕ reggeliző).
+
 
 
 

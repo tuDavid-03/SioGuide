@@ -33,6 +33,6 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 ## 5. Fázis 6: Hangalapú Interakció, Többnyelvűség és UI Finomhangolás
 - [x] Fázis 6.1: Frontend: Web Speech API integráció (elegáns mikrofon gomb, hangalapú diktálás, pulzáló hallgatózási UI)
 - [x] Fázis 6.2: Backend: Többnyelvűség szigorú prompt-szabályozása (dinamikus HU / EN / DE válaszadás és kedvezmény-fordítás)
-- [ ] Fázis 6.3: Adatbázis bővítés (további siófoki partnerek, nyitvatartások és közvetlen elérhetőségek)
+- [x] Fázis 6.3: Adatbázis bővítés (további siófoki partnerek, nyitvatartások és közvetlen elérhetőségek)
 - [ ] Fázis 6.4: UI / UX finomhangolás és mikróinterakciók (üzenet másolás, mobil optimalizálás, toast értesítések)
 - [ ] Fázis 6.5: Valós idejű BAHART hajómenetrend integráció (siófoki kikötői járatok lekérdezése)

@@ -14,6 +14,10 @@ const CATEGORY_ICONS = {
   'sport / vízisport':                  '🏄',
   'szórakozóhely / esti program':       '🎉',
   'szabadtéri / esti program':          '🌙',
+  'szórakozás / biliárd':               '🎱',
+  'látványosság / park':                '🌹',
+  'látványosság / kávézó':              '🗼',
+  'reggeliző / kávézó':                 '☕',
 }
 
 export default function PlaceModal({ place, onClose }) {

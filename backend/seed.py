@@ -232,6 +232,53 @@ LOCATIONS: list[dict] = [
             "Párás nyári estéken romantikus program, fagyizással és sétahajóval kombinálható."
         ),
     },
+
+    # --- Új Látványosságok, Gasztro & Szórakozás (Fázis 6.3) ---
+    {
+        "name": "Penthouse Pub & Bar – Sió Pláza",
+        "category": "szórakozás / biliárd",
+        "discount_info": "10% kedvezmény minden koktélra és biliárd óradíjra szobakulccsal!",
+        "description": (
+            "Prémium biliárdasztalok, minőségi koktélok és modern lounge hangulat a Sió Pláza legfelső emeletén. "
+            "Ideális esti alapozáshoz, baráti meccsekhez és esős délutáni kikapcsolódáshoz Siófok belvárosában."
+        ),
+    },
+    {
+        "name": "Roxy Étterem és Kávézó",
+        "category": "étterem",
+        "discount_info": "10% árengedmény a főételek árából a Müller's vendégeknek!",
+        "description": (
+            "Népszerű, modern étterem és kávézó Siófok szívében, közvetlenül a Víztorony mellett a Fő téren. "
+            "Kiváló magyaros és nemzetközi fogások, kézműves kávék és bőséges reggeli kínálat."
+        ),
+    },
+    {
+        "name": "Rózsakert és Hajóállomás Park",
+        "category": "látványosság / park",
+        "discount_info": None,
+        "description": (
+            "Gyönyörű, gondozott virágos park a siófoki kikötő mellett a Balaton partján. "
+            "Szökőkutak, árnyas fák, szobrok és közvetlen tóparti sétány. Ideális romantikus délutáni sétákhoz és pihenéshez."
+        ),
+    },
+    {
+        "name": "Siófoki Víztorony és Kilátó",
+        "category": "látványosság / kávézó",
+        "discount_info": "15% kedvezmény a kilátó belépőjegy árából a szobakártya felmutatásával!",
+        "description": (
+            "Siófok 45 méter magas ikonikus szimbóluma a belváros közepén, a Fő téren. "
+            "360 fokos panorámás kilátó a Balatonra és a városra, forgó kávézóval és élményközponttal."
+        ),
+    },
+    {
+        "name": "Marci Reggeliző és Brunch Bár",
+        "category": "reggeliző / kávézó",
+        "discount_info": "Ingyenes friss eszpresszó vagy házi limonádé minden reggeli tál mellé!",
+        "description": (
+            "Hangulatos specialty kávézó és modern brunch bár Siófok központjában. "
+            "Friss kézműves péksütemények, tojásételek, amerikai palacsinta és smoothie-k már reggel 7:30-tól."
+        ),
+    },
 ]
 
 

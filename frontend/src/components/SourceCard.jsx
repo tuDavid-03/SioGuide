@@ -18,6 +18,10 @@ const CATEGORY_STYLES = {
   'sport / vízisport':                  { icon: '🏄', bg: 'bg-teal-50',   border: 'border-teal-200',   badge: 'bg-teal-100 text-teal-700'   },
   'szórakozóhely / esti program':       { icon: '🎉', bg: 'bg-pink-50',   border: 'border-pink-200',   badge: 'bg-pink-100 text-pink-700'   },
   'szabadtéri / esti program':          { icon: '🌙', bg: 'bg-violet-50', border: 'border-violet-200', badge: 'bg-violet-100 text-violet-700'},
+  'szórakozás / biliárd':               { icon: '🎱', bg: 'bg-indigo-50', border: 'border-indigo-200', badge: 'bg-indigo-100 text-indigo-700'},
+  'látványosság / park':                { icon: '🌹', bg: 'bg-emerald-50',border: 'border-emerald-200',badge: 'bg-emerald-100 text-emerald-700'},
+  'látványosság / kávézó':              { icon: '🗼', bg: 'bg-amber-50',  border: 'border-amber-200',  badge: 'bg-amber-100 text-amber-700'  },
+  'reggeliző / kávézó':                 { icon: '☕', bg: 'bg-amber-50',  border: 'border-amber-200',  badge: 'bg-amber-100 text-amber-700'  },
 }
 
 const DEFAULT_STYLE = { icon: '📍', bg: 'bg-gray-50', border: 'border-gray-200', badge: 'bg-gray-100 text-gray-600' }
