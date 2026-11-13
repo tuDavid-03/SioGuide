@@ -1,71 +1,83 @@
-# SioGuide 🌊 – RAG-alapú Intelligens Turisztikai és Szállás-asszisztens
+# SioGuide 🌊 – Agentic RAG Turisztikai és Szállás-asszisztens
 
-> **Egyetemi Projekt Dokumentáció**  
+> **Egyetemi Projekt Dokumentáció – Stabil Béta Verzió (v0.5.0-beta)**  
 > **Célintézmény:** Siófoki Müller's vendégházak (Fő utca 104-106, Kálmán Imre sétány 9, Fő utca 114)  
 > **Célközönség:** Egyéni szállóvendégek, családok és iskolai osztálykirándulások  
+> **Projekt Állapot:** Stabil Béta (aktív fejlesztés és tesztelés alatt)
 
 ---
 
 ## 📖 1. Projekt Áttekintés
 
-A **SioGuide** egy modern, **RAG** (*Retrieval-Augmented Generation*) architektúrára épülő intelligens webes asszisztens. Célja, hogy a siófoki Müller's vendégházakba érkező vendégeknek releváns, hiteles és kontextusfüggő segítséget nyújtson:
-- Információk a vendégházak szolgáltatásairól, felszereltségéről és elhelyezkedéséről.
-- Személyre szabott programajánlók strandokról, éttermekről, kulturális és szórakozási lehetőségekről.
-- **Időjárás- és napszak-érzékeny ajánlások**: integrált élő időjárás-előrejelzés (Open-Meteo) és dinamikus napszak-logika alapján rossz időben beltéri alternatívákat, este pedig vacsora- és szórakozóhelyeket javasol.
-- **Átlátható forrásmegjelölés**: minden válasz alatt megjeleníti a felhasznált hiteles helyszíneket hasonlósági pontszámmal és kategóriákkal.
+A **SioGuide** egy korszerű, **Agentic RAG** (*Retrieval-Augmented Generation* és *Autonomous Function Calling*) architektúrára épülő intelligens webes asszisztens. Célja, hogy a siófoki Müller's vendégházak vendégeinek valós idejű, pontos, helyi információkat és exkluzív kedvezményeket nyújtson:
+
+- **Hiteles Szállás- és Programinformáció:** Részletes adatok a Müller's 3 egységéről, a strandokról, éttermekről, kulturális és wellness lehetőségekről.
+- **Agentic AI & Google Maps Eszközhasználat:** A Gemini 3.8 Flash autonóm módon hívja meg a Google Maps Distance Matrix API-t, hogy valós idejű gyalogos távolságokat, sétaidőket és többállomásos menetterveket kalkuláljon.
+- **Müller's Partnerkedvezmények:** A RAG adatbázisba ágyazott kedvezmények (pl. Pietro Pizzeria 15%, Palace Wellness 20%, Escape60 15%) automatikus beépítése a válaszokba és kiemelése a felületen.
+- **Időjárás- és Napszak-érzékeny Logika:** Élő Open-Meteo időjárási adatok (hőmérséklet, WMO esőkódok) és óra-alapú napszak-szabályok alapján esős napokon beltéri programokat, este pedig vacsorát és szórakozóhelyeket javasol.
+- **Interaktív Forrásmegjelölés & Google Térkép Modal:** A válaszokhoz tartozó forráskártyákra kattintva felugró modális ablakban közvetlenül beágyazott interaktív Google Térkép (Embed API) és kedvezmény-érvényesítési útmutató jelenik meg.
 
 ---
 
-## 🏛️ 2. Rendszerarchitektúra és Adatfolyam
+## 🏛️ 2. Rendszerarchitektúra és Agentic Adatfolyam
 
 ```
-+-----------------------------------------------------------------------------------+
-|                                 REACT FRONTEND                                    |
-|   Vite + Tailwind CSS · Chat UI · Forrásmegjelölő kártyák · Reszponzív felület    |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          | HTTP POST /ask (JSON)
-                                          v
-+-----------------------------------------------------------------------------------+
-|                               FASTAPI BACKEND                                     |
-|                                                                                   |
-|  1. Időjárás és Idő Lekérés:                                                     |
-|     --> Open-Meteo API (hőmérséklet, WMO kód) + Python datetime (napszak logika)  |
-|                                                                                   |
-|  2. Vektorizálás:                                                                |
-|     --> Google Gemini Embedding (gemini-embedding-001, 768 dimenzió)              |
-|                                                                                   |
-|  3. Visszakeresés (Retrieval):                                                   |
-|     --> Supabase pgvector RPC (match_locations) HNSW indexeléssel                |
-|                                                                                   |
-|  4. Válaszgenerálás (Generation):                                                |
-|     --> Google Gemini 3.8 Flash (kontextus, időjárás, prompt szabályok)           |
-+---------------------+---------------------------------------+---------------------+
-                      |                                       |
-                      v                                       v
-+-----------------------------------+   +-------------------------------------------+
-|          SUPABASE CLOUD           |   |            KÜLSŐ SZOLGÁLTATÁSOK           |
-|  - PostgreSQL 17 + pgvector       |   |  - Google Gemini API:                     |
-|  - locations tábla (vector(768))  |   |      * gemini-embedding-001 (768 dim)     |
-|  - HNSW koszinusz-index           |   |      * gemini-3.8-flash                   |
-|  - match_locations() tárolt eljárás |  - Open-Meteo Forecast API (szabad hozzáférés) |
-+-----------------------------------+   +-------------------------------------------+
++-------------------------------------------------------------------------------------------------+
+|                                         REACT FRONTEND                                          |
+|  - Vite + Tailwind CSS · Egyoldalas Chat Alkalmazás (SPA)                                       |
+|  - Kattintható forráskártyák (SourceCard) animált 🎁 Müller's Kedvezmény badge-ekkel            |
+|  - Interaktív PlaceModal beágyazott Google Maps Embed API-val (iframe)                          |
++------------------------------------------------+------------------------------------------------+
+                                                 |
+                                                 | HTTP POST /ask { question }
+                                                 v
++-------------------------------------------------------------------------------------------------+
+|                                        FASTAPI BACKEND                                          |
+|                                                                                                 |
+|  1. Meteorológiai és Idő Kontextus:                                                             |
+|     --> Open-Meteo REST API (hőmérséklet, WMO kód) + datetime napszak elemzés                   |
+|                                                                                                 |
+|  2. Beágyazás (Embedding):                                                                      |
+|     --> Google Gemini gemini-embedding-001 (768 dimenzió, RETRIEVAL_QUERY)                      |
+|                                                                                                 |
+|  3. Vektorkeresés (Retrieval):                                                                  |
+|     --> Supabase pgvector RPC (match_locations) HNSW indexeléssel                               |
+|     --> Helyszínek + discount_info partnerkedvezmények kiolvasása                               |
+|                                                                                                 |
+|  4. Agentic AI Chat & Function Calling (Generation):                                            |
+|     --> Google Gemini 3.8 Flash (chats.create + automatic_function_calling)                     |
+|     --> Szükség esetén automatikus Google Maps Distance Matrix API hívás                        |
+|         [get_walking_distance(origin, destination)] -> távolság, menetidő, többállomásos tervek |
++-------------------------------+-----------------------------------------------+-----------------+
+                                |                                               |
+                                v                                               v
++-----------------------------------------------+   +---------------------------------------------+
+|                SUPABASE CLOUD                 |   |             KÜLSŐ SZOLGÁLTATÁSOK            |
+|  - PostgreSQL 17 + pgvector                   |   |  - Google Gemini API:                       |
+|  - locations tábla (embedding: vector(768),   |   |      * gemini-embedding-001 (768 dim)       |
+|    discount_info: text)                       |   |      * gemini-3.8-flash (Function Calling)  |
+|  - HNSW koszinusz távolság index              |   |  - Google Maps Distance Matrix API          |
+|  - match_locations() tárolt eljárás           |   |  - Google Maps Embed API (Frontend iframe)  |
+|                                               |   |  - Open-Meteo Weather API (ingyenes)        |
++-----------------------------------------------+   +---------------------------------------------+
 ```
 
 ---
 
-## 🛠️ 3. Alkalmazott Technológiák
+## 🛠️ 3. Alkalmazott Technológiák és Könyvtárak
 
-| Réteg | Technológia | Szerep a projektben |
+| Réteg | Technológia / Szolgáltatás | Szerep a rendszerben |
 |---|---|---|
-| **Adatbázis** | **Supabase (PostgreSQL 17)** | Felhőalapú relációs adatbázis RLS védelemmel |
-| **Vektorkeresés** | **pgvector kiterjesztés + HNSW index** | 768 dimenziós koszinusz-távolság alapú szemantikus keresés |
-| **Backend** | **FastAPI (Python 3.11+)** | Aszinkron, nagy teljesítményű REST API |
-| **Beágyazás (Embedding)** | **Google Gemini `gemini-embedding-001`** | 768 dimenzióra optimalizált szövegvektorizálás |
-| **Nagy Nyelvi Modell (LLM)** | **Google Gemini `gemini-3.8-flash`** | Szöveggenerálás, prompt guardrails és kontextusfeldolgozás |
-| **Időjárás API** | **Open-Meteo REST API** | Élő siófoki meteorológiai adatok lekérése kulcs nélkül |
-| **Frontend** | **React 19 + Vite** | Komponens-alapú egyoldalas webalkalmazás (SPA) |
-| **Stílus és UI** | **Tailwind CSS v3** | Balatoni hangulatú, modern és reszponzív felület |
+| **Adatbázis** | **Supabase (PostgreSQL 17)** | Felhőalapú perzisztencia, RLS biztonsági házirendek |
+| **Vektorkeresés** | **pgvector + HNSW index** | 768 dimenziós gyors és pontos koszinusz-hasonlósági keresés |
+| **Backend Keretrendszer** | **FastAPI (Python 3.11+)** | Aszinkron REST API, OpenAPI/Swagger dokumentációval |
+| **Agentic AI & LLM** | **Google Gemini `gemini-3.8-flash`** | Szövegértés, többállomásos útvonal-tervezés és automatikus Function Calling |
+| **Szövegvektorizálás** | **Google Gemini `gemini-embedding-001`** | 768 dimenzióra optimalizált szemantikus beágyazás |
+| **Távolságmérés Tool** | **Google Maps Distance Matrix API** | Gyalogos távolságok és menetidők lekérdezése Siófokon |
+| **Interaktív Térkép** | **Google Maps Embed API** | Helyszínek beágyazott interaktív térképes megjelenítése |
+| **Időjárás Szolgáltatás** | **Open-Meteo API** | Valós idejű siófoki hőmérséklet és csapadékadatok kulcs nélkül |
+| **Frontend Keretrendszer** | **React 19 + Vite** | Nagy sebességű SPA, modern React Hooks és állapotkezelés |
+| **Design & Stílus** | **Tailwind CSS v3** | Reszponzív, balatoni kék színvilágú modern UI |
 
 ---
 
@@ -73,40 +85,41 @@ A **SioGuide** egy modern, **RAG** (*Retrieval-Augmented Generation*) architekt�
 
 ```
 SioGuide/
-├── .env                        # Központi környezeti változók (API kulcsok, DB URI)
+├── .env                        # Központi környezeti változók (DB URI, Gemini és Maps API kulcsok)
 ├── .gitignore                  # Git figyelmen kívül hagyási szabályok
-├── DEVELOPMENT_LOG.md          # Részletes fázisonkénti fejlesztési napló
-├── PROJECT_BOARD.md            # Projekt feladatkövető tábla (Roadmap)
-├── README.md                   # Ez a dokumentáció
+├── DEVELOPMENT_LOG.md          # Fázisonkénti részletes fejlesztési napló
+├── PROJECT_BOARD.md            # Projekt feladatkövető tábla és Roadmap
+├── README.md                   # Részletes egyetemi dokumentáció
 │
 ├── backend/                    # FastAPI Backend alkalmazás
-│   ├── config.py               # Pydantic Settings alapú konfigurációkezelő
-│   ├── main.py                 # FastAPI szerver, végpontok és RAG pipeline
+│   ├── config.py               # Pydantic Settings konfigurációkezelő (.env betöltése)
+│   ├── main.py                 # FastAPI szerver, Google Maps Tool és Agentic RAG pipeline
 │   ├── requirements.txt        # Python függőségek listája
-│   ├── seed.py                 # Adatfeltöltő szkript a Supabase adatbázishoz
-│   └── test_rpc.py             # Izolált tesztszkript az RPC és vektorkeresés ellenőrzésére
+│   ├── seed.py                 # 17 siófoki helyszínt és kedvezményeket feltöltő szkript
+│   └── test_rpc.py             # Izolált pgvector és RPC integrációs tesztszkript
 │
 └── frontend/                   # React Frontend alkalmazás (Vite)
-    ├── .env                    # Frontend környezeti változó (VITE_API_URL)
+    ├── .env                    # Frontend környezeti változók (VITE_API_URL, Maps API key)
     ├── index.html              # HTML belépési pont
     ├── package.json            # Node.js függőségek és scriptek
-    ├── tailwind.config.js      # Tailwind CSS konfiguráció
-    ├── vite.config.js          # Vite konfiguráció
+    ├── tailwind.config.js      # Egyedi balatoni színpaletta konfiguráció
+    ├── vite.config.js          # Vite build beállítások
     └── src/
-        ├── App.jsx             # Fő Chat komponens és állapotkezelés
+        ├── App.jsx             # Fő Chat felület, állapotkezelés és Modal renderelés
         ├── main.jsx            # React root inicializálás
-        ├── index.css           # Globális stílusok és animációk
+        ├── index.css           # Globális Tailwind direktívák és animációk
         └── components/
-            ├── ChatMessage.jsx # Felhasználói és asszisztens üzenetbuborékok
+            ├── ChatMessage.jsx # Felhasználói és asszisztens buborékok markdown formázással
             ├── LoadingDots.jsx # Aszinkron várakozási animáció
-            └── SourceCard.jsx  # Forrásmegjelölő kártya hasonlósági mutatóval
+            ├── PlaceModal.jsx  # Felugró modal Google Maps Embed térképpel és kedvezményekkel
+            └── SourceCard.jsx  # Kattintható forráskártyák 🎁 Müller's Kedvezmény badge-dzsel
 ```
 
 ---
 
-## 🗄️ 5. Adatbázis Séma és Tárolt Eljárás
+## 🗄️ 5. Adatbázis Séma és Tárolt Eljárás (Supabase DDL)
 
-A Supabase adatbázisban a `locations` tábla tárolja a helyszíneket a leírásukból generált 768 dimenziós vektorokkal:
+A `locations` tábla tárolja a helyszíneket, a 768 dimenziós beágyazásokat és a partnerkedvezményeket:
 
 ```sql
 -- 1. pgvector kiterjesztés aktiválása
@@ -114,20 +127,21 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 -- 2. locations tábla létrehozása
 CREATE TABLE IF NOT EXISTS public.locations (
-  id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name        text        NOT NULL,
-  description text        NOT NULL,
-  category    text        NOT NULL,
-  embedding   vector(768),
-  created_at  timestamptz NOT NULL DEFAULT now()
+  id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name          text        NOT NULL,
+  description   text        NOT NULL,
+  category      text        NOT NULL,
+  discount_info text        DEFAULT NULL,
+  embedding     vector(768),
+  created_at    timestamptz NOT NULL DEFAULT now()
 );
 
--- 3. HNSW vektorindex létrehozása a pontos és gyors koszinusz-kereséshez
+-- 3. HNSW vektorindex létrehozása (garantálja a gyors és pontos koszinusz keresést)
 CREATE INDEX IF NOT EXISTS locations_embedding_hnsw_idx 
   ON public.locations 
   USING hnsw (embedding vector_cosine_ops);
 
--- 4. RLS és jogosultságok
+-- 4. RLS és olvasási jogosultság
 ALTER TABLE public.locations ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "public read locations"
@@ -135,26 +149,31 @@ CREATE POLICY "public read locations"
   TO anon, authenticated
   USING (true);
 
--- 5. Hasonlósági kereső tárolt eljárás (RPC)
+-- 5. match_locations tárolt eljárás (RPC)
 CREATE OR REPLACE FUNCTION public.match_locations(
-  query_embedding vector(768),
-  match_threshold float DEFAULT 0.3,
-  match_count     int   DEFAULT 5
+  query_embedding vector,
+  match_threshold double precision DEFAULT 0.3,
+  match_count     integer          DEFAULT 5
 )
 RETURNS TABLE (
-  id          bigint,
-  name        text,
-  description text,
-  category    text,
-  similarity  float
+  id            bigint,
+  name          text,
+  description   text,
+  category      text,
+  discount_info text,
+  similarity    double precision
 )
-LANGUAGE sql STABLE SECURITY INVOKER SET search_path = public
+LANGUAGE sql
+STABLE
+SECURITY INVOKER
+SET search_path = public
 AS $$
   SELECT
     l.id,
     l.name,
     l.description,
     l.category,
+    l.discount_info,
     1 - (l.embedding <=> query_embedding) AS similarity
   FROM locations l
   WHERE 1 - (l.embedding <=> query_embedding) >= match_threshold
@@ -165,30 +184,39 @@ $$;
 
 ---
 
-## ⚙️ 6. Telepítés és Helyi Futtatás
+## ⚙️ 6. Környezeti Változók és Beállítás
 
-### Előfeltételek
-- **Python 3.11+**
-- **Node.js 18+** és `npm`
-- **Supabase** projekt (aktív pgvector kiterjesztéssel)
-- **Google Gemini API kulcs**
+A rendszer működéséhez két külön `.env` konfiguráció szükséges:
 
-### 1. Környezeti változók beállítása
-Hozd létre a gyökérkönyvtárban a `.env` fájlt:
+### 1. Központi `.env` (a projekt gyökérkönyvtárában):
 ```env
+# Supabase hitelesítés
 SUPABASE_URL=https://<your-project-ref>.supabase.co
 SUPABASE_SERVICE_KEY=<your-supabase-service-role-key>
-GEMINI_API_KEY=<your-gemini-api-key>
+
+# Google Gemini API (Beágyazások és Chat LLM)
+GEMINI_API_KEY=AIzaSy...
+
+# Google Maps API (Distance Matrix API a backend tool calling-hoz)
+GOOGLE_MAPS_API_KEY=AIzaSy...
 ```
 
-A `frontend/.env` fájl tartalma:
+### 2. Frontend `.env` (`frontend/.env`):
 ```env
+# Backend API elérési út
 VITE_API_URL=http://localhost:8000
+
+# Google Maps Embed API kulcs az interaktív iframe megjelenítéséhez
+VITE_GOOGLE_MAPS_API_KEY=AIzaSy...
 ```
 
-### 2. Backend beüzemelése
+---
+
+## 🚀 7. Telepítési és Indítási Útmutató
+
+### 1. Backend elindítása
 ```bash
-# Virtuális környezet létrehozása és aktiválása
+# Virtuális környezet aktiválása
 python3 -m venv venv
 source venv/bin/activate       # macOS / Linux
 # venv\Scripts\activate        # Windows
@@ -197,18 +225,18 @@ source venv/bin/activate       # macOS / Linux
 cd backend
 pip install -r requirements.txt
 
-# Adatbázis feltöltése kezdőadatokkal (17 siófoki helyszín)
+# Adatbázis feltöltése 17 siófoki helyszínnel és kedvezményekkel
 python seed.py
 
-# FastAPI szerver indítása fejlesztői módban
+# FastAPI szerver indítása
 uvicorn main:app --reload --port 8000
 ```
 - **Backend API:** `http://localhost:8000`
-- **Swagger / OpenAPI Dokumentáció:** `http://localhost:8000/docs`
-- **Egészségügyi ellenőrzés:** `http://localhost:8000/health`
+- **Interaktív Swagger UI:** `http://localhost:8000/docs`
+- **Health Check:** `http://localhost:8000/health`
 
-### 3. Frontend beüzemelése
-Egy új terminálablakban:
+### 2. Frontend elindítása
+Egy külön terminálablakban:
 ```bash
 cd frontend
 npm install
@@ -218,59 +246,38 @@ npm run dev
 
 ---
 
-## 📡 7. API Végpontok
+## 💡 8. Agentic Funkciók és Üzleti Logika
 
-### `GET /health`
-Rendszer állapotának és verziójának lekérdezése (monitoring, CI/CD számára).
-- **Válasz:** `{"status": "ok", "service": "SioGuide API", "version": "0.3.0"}`
+### 🧠 1. Autonóm Google Maps Function Calling
+A backend a Google GenAI legfrissebb Chat API-ját használja (`automatic_function_calling=True`). Amikor a vendég távolságra, menetidőre vagy többállomásos útitervre kérdez rá:
+1. A Gemini felismeri a szándékot, és autonóm módon meghívja a `get_walking_distance(origin, destination)` Python eszközt.
+2. A függvény a Google Maps Distance Matrix API-n keresztül kiszámolja a valós siófoki gyalogos távolságot és menetidőt.
+3. A nyelvi modell az eredményt természetes magyar szövegben formázva építi be a válaszba.
 
-### `POST /ask`
-RAG-alapú kérdés-válasz végpont.
-- **Kérés:**
-  ```json
-  {
-    "question": "Milyen beltéri programot ajánlasz ma estére a Müller's vendégház közelében?"
-  }
-  ```
-- **Válasz:**
-  ```json
-  {
-    "answer": "Mivel jelenleg este van és hűvösebb az idő, kiváló választás lehet a Palace Wellness & Spa vagy a közeli Escape60 Szabadulószoba...",
-    "sources": [
-      {
-        "id": 9,
-        "name": "Palace Wellness & Spa",
-        "description": "Fedett wellness részleg Siófokon: medence, szauna, masszázs...",
-        "category": "wellness / beltéri program",
-        "similarity": 0.78
-      },
-      {
-        "id": 1,
-        "name": "Müller's Vendégház – Fő utca 104-106",
-        "description": "Központi elhelyezkedésű szálláshely...",
-        "category": "szállás",
-        "similarity": 0.76
-      }
-    ]
-  }
-  ```
+### 🎁 2. RAG-ba Ágyazott Müller's Partnerkedvezmények
+A `seed.py` a beágyazás során a kedvezmények szövegét is vektorizálja. Ha a vendég akciókra, olcsóbb étkezésre vagy wellnessre kérdez, a rendszer automatikusan a partnerhelyeket hozza fel elsőként:
+- 🍕 **Pietro Ristorante & Pizzeria:** 15% kedvezmény minden pizzára és tésztára szobakulccsal.
+- 💆 **Palace Wellness & Spa:** 20% kedvezmény az egész napos wellness belépőből és ingyenes szauna.
+- 🍔 **Renegát Pub & Burger:** Ajándék kézműves szörp vagy pohár sör minden burger menühöz.
+- 🧩 **Escape60 Szabadulószoba:** 15% csoportos kedvezmény osztálykirándulóknak és Müller's vendégeknek.
+- 🏄 **Siófoki Vízisport Centrum:** 1 óra SUP/vízibicikli bérlés mellé +30 perc ajándék.
+- 🎉 **Flört Club:** Éjfélig ingyenes belépés vendégkártyával.
+
+### 🗺️ 3. Interaktív PlaceModal és Térkép Iframe
+A chat alatt listázott forráskártyákra kattintva egy Tailwind-del formázott modális ablak ugrik fel:
+- Részletes leírás és százalékos egyezés.
+- Kiemelt arany doboz a kedvezmény pontos beváltási instrukciójával.
+- Helyszínre fókuszált **interaktív Google Térkép iframe** (Embed API).
+- Közvetlen *"Útvonaltervezés"* gomb, amely a natív Google Térképre navigál.
 
 ---
 
-## 🧠 8. RAG Prompt és Kontextus Logika
+## 🔮 9. Fázis 6: Továbbfejlesztési Roadmap (Ötlettár)
 
-A rendszer nem pusztán statikus adatbázis-találatokat ad át a nyelvi modellnek, hanem több rétegű kontextust épít:
+A projekt jelenleg stabil Béta állapotban van. A jövőbeli fejlesztési irányok:
 
-1. **Időjárási réteg (Open-Meteo):** Az API lekéri a valós idejű siófoki hőmérsékletet és az aktuális WMO időjárási kódot (pl. eső, napos, borult).
-2. **Idő- és napszak-érzékenység:** A prompt az óra szerint négy kategóriára bontja a javaslatokat (reggel: kávézók/reggeli; délután: strand/kirándulás; este: vacsora/bárok; éjszaka: éjjeli nyitvatartás).
-3. **Guardrails & Hallucináció-védelem:** A modell szigorú rendszerutasítást kap, hogy kizárólag a kapott forráshelyszínekre támaszkodjon, és udvariasan utasítsa el az irreleváns vagy nem siófoki témákat.
-4. **Hitelesség ellenőrzése:** A válaszban felhasznált helyszínek a frontend felületen színkódolt, interaktív kártyákon jelennek meg, megmutatva a szemantikus hasonlóság százalékos értékét.
-
----
-
-## 🏆 9. Fejlesztési Mérföldkövek és Eredmények
-
-- ✅ Sikeres adatbázis-migráció 1536 dimenzióról (OpenAI) 768 dimenzióra (Gemini).
-- ✅ Hiba-izoláció és megoldás: az IVFFlat kis elemszámú torzításának megszüntetése HNSW indexeléssel.
-- ✅ Teljesen aszinkron és hibatűrő időjárás-kezelés (időjárási hiba esetén sem áll le a RAG keresés).
-- ✅ Letisztult, reszponzív felület forrásmegjelöléssel.
+- [ ] **Fázis 6.1: Élő BAHART hajómenetrend integráció** – A siófoki kikötő menetrendszerű járatainak dinamikus lekérdezése (Balatonfüred, Tihany).
+- [ ] **Fázis 6.2: Többnyelvű asszisztens (HU / EN / DE)** – Külföldi turisták és diákok kiszolgálása automatikus nyelvfelismeréssel.
+- [ ] **Fázis 6.3: Hangalapú asszisztens (Voice AI)** – Web Speech API / Whisper alapú beszédbevitel és hangos felolvasás a kényelmes strandolás közbeni használathoz.
+- [ ] **Fázis 6.4: Müller's Szobafoglalási és Reggeli űrlap** – Közvetlen foglalási igények és reggeli-rendelések leadása a chaten keresztül.
+- [ ] **Fázis 6.5: Offline PWA támogatás** – Mobilra telepíthető webalkalmazás helyi gyorsítótárral hálózati kimaradás esetére.

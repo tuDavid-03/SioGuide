@@ -250,6 +250,7 @@ A vendégek kérdéseire barátságos, tömör, magyar nyelvű választ adsz.
 KIZÁRÓLAG az alábbi helyi adatforrásra és a rendelkezésedre álló eszközökre támaszkodj.
 Ha a helyszínhez tartozik Müller's Kedvezmény, azt MINDIG emeld ki a válaszodban a vendégek örömére!
 Ha a vendég távolságot, sétaidőt kérdez vagy útvonalat keres a vendégház és egy célpont között, hívd meg a get_walking_distance eszközt.
+Képes vagy komplex, többállomásos menetterveket is összeállítani. Ha a felhasználó több helyszínt vagy programot szeretne meglátogatni egymás után, logikusan fűzd össze őket, és feltétlenül használd az útvonaltervező eszközt az állomások közötti távolságok és gyalogos idők kiszámítására.
 Vedd figyelembe az aktuális időt és időjárást: {time_of_day_tip}
 Esős, hideg időben beltéri programokat (wellness, múzeum, étterem) részesíts előnyben; szép időben szabadtérieket.{weather_context}
 

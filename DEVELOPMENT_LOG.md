@@ -249,4 +249,15 @@ Felhasználói kérdés
   - `selectedPlace` állapot kezelése és összekötése a `SourceCard` kattintásokkal.
   - Frissített fejléc jelvények (Partnerkedvezmények & Google Maps).
 
+---
+
+### 5.4 – Többállomásos Menetterv Prompt & Stabil Béta Dokumentáció
+
+**Dátum:** 2026-11-13
+
+- `backend/main.py`: Gemini `system_instruction` kiegészítve a többállomásos menettervek és komplex útvonalak összeállítására vonatkozó instrukcióval, kötelező eszközként előírva a `get_walking_distance` használatát a szakaszok távolságainak és gyalogos idejének kiszámítására.
+- `README.md`: Teljes körű dokumentáció frissítés a stabil Béta verzióhoz: Agentic AI architektúra, Google Maps Distance Matrix Tool Calling, RAG-ba ágyazott `discount_info` kedvezmények, interaktív Google Maps Embed iframe-ek és Fázis 6 továbbfejlesztési roadmap.
+- `PROJECT_BOARD.md`: Fázis 5 lezárva, új Fázis 6 (továbbfejlesztési ötlettár) bevezetve.
+
+
 
