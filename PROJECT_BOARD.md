@@ -35,4 +35,4 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 - [x] Fázis 6.2: Backend: Többnyelvűség szigorú prompt-szabályozása (dinamikus HU / EN / DE válaszadás és kedvezmény-fordítás)
 - [x] Fázis 6.3: Adatbázis bővítés (további siófoki partnerek, nyitvatartások és közvetlen elérhetőségek)
 - [x] Fázis 6.4: Auto-nyelvfelismerés (I18n: HU/EN/DE), dinamikus üdvözlés & UI szótár, elegáns gombmentes automatikus Splash Screen
-- [ ] Fázis 6.5: Valós idejű BAHART hajómenetrend integráció (siófoki kikötői járatok lekérdezése)
+- [x] Fázis 6.5: PWA (Progressive Web App) integráció (vite-plugin-pwa, manifest, mobilos telepíthetőség)

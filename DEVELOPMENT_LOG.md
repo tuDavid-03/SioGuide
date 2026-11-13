@@ -301,4 +301,23 @@ Felhasználói kérdés
   - **Elegáns Splash Screen:** Teljes képernyős, letisztult, gombmentes nyitóképernyő Balatoni hullám és fényeffektekkel, 'SioGuide' logóval és nyelvhű alcímmel (*"Müller's AI Concierge · Siófok"*). A felület ~1.6 másodperc után sima 600ms-os `fade-out` átmenettel automatikusan átadja a helyét a chatnek.
 - `frontend/tailwind.config.js`: Bővítve `lake-950` árnyalattal a prémium sötétkék splash-átmenethez.
 
+---
+
+### 6.5 – PWA (Progressive Web App) Integráció
+
+**Dátum:** 2026-11-13
+
+- `frontend/package.json`: Telepítve a `vite-plugin-pwa` fejlesztői függőség.
+- `frontend/vite.config.js`:
+  - `VitePWA` konfigurálva `autoUpdate` regisztrációs móddal.
+  - Manifest metaadatok megadva:
+    - `name`: "SioGuide - Müller's AI Concierge"
+    - `short_name`: "SioGuide"
+    - `theme_color` & `background_color`: `#082f49` (lake-950)
+    - `display`: `standalone`
+    - `icons`: `pwa-192x192.png`, `pwa-512x512.png` és `maskable` ikon beállítása.
+- `frontend/index.html`:
+  - PWA és mobil viewport meta címkék hozzáadva (`theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `apple-touch-icon`).
+- `frontend/dist/`: Sikeres PWA build precache service workerrel (`dist/sw.js`, `dist/manifest.webmanifest`, `dist/registerSW.js`).
+
 
