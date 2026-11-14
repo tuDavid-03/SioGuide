@@ -43,9 +43,14 @@ RAG (Retrieval-Augmented Generation) alapú turisztikai és szállás-assziszten
 - [x] Fázis 6.9.1: UI Finomítások és Béta 2 Véglegesítés (természetes kosár prompt, azonnali megosztás gomb a chatben, 📍 vízjel fejléc formázás)
 - [x] Fázis 6.9.2: Kosár Elemek Eltávolítása (Toggle Funkció) (toggleTripCartItem az App.jsx-ben, aktív gomb visszavonás és ❌ Eltávolítás hover UX a SourceCard-on)
 
+## 6. Fázis 7: Projekt Dokumentáció és Hivatalos Zárás
+- [x] Fázis 7.1: Professzionális, angol nyelvű README.md dokumentáció (Rendszerarchitektúra, Key Features, Tech Stack, Helyi futtatási útmutató)
+- [x] Fázis 7.2: README Magyarítása és Élő Linkek Beillesztése (Hivatalos egyetemi dokumentáció, Vercel & Render éles linkek)
 
-## 6. Jövőbeli Fejlesztések (v2.0)
+
+## 7. Jövőbeli Fejlesztések (v2.0)
 - [ ] Fázis 6.7: Valós idejű BAHART hajómenetrend integráció (siófoki kikötői járatok lekérdezése)
 - [ ] PMS szállásfoglalási motor közvetlen kétirányú szinkronizáció
 - [ ] Valós idejű balatoni viharjelzés és Push értesítések PWA-ban
+
 

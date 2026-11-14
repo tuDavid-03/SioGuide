@@ -1,283 +1,342 @@
-# SioGuide 🌊 – Agentic RAG Turisztikai és Szállás-asszisztens
+# SioGuide – Müller's AI Concierge
 
-> **Egyetemi Projekt Dokumentáció – Stabil Béta Verzió (v0.5.0-beta)**  
-> **Célintézmény:** Siófoki Müller's vendégházak (Fő utca 104-106, Kálmán Imre sétány 9, Fő utca 114)  
-> **Célközönség:** Egyéni szállóvendégek, családok és iskolai osztálykirándulások  
-> **Projekt Állapot:** Stabil Béta (aktív fejlesztés és tesztelés alatt)
+> **Agentic RAG alapú, többnyelvű, hangvezérelt turisztikai asszisztens és Progresszív Webalkalmazás (PWA) a Balaton partján**  
+> *Kifejezetten a siófoki Müller's vendégházak vendégei számára tervezve*  
+> **Hivatalos Egyetemi Projekt Dokumentáció (Production-Ready Release)**
+
+[![React](https://img.shields.io/badge/React-19.x-blue.svg?logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF.svg?logo=vite)](https://vitejs.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-pgvector-3ECF8E.svg?logo=supabase)](https://supabase.com/)
+[![Google Gemini](https://img.shields.io/badge/Google_GenAI-Gemini_Flash-8E75B2.svg?logo=google)](https://ai.google.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com/)
+[![PWA Ready](https://img.shields.io/badge/PWA-Telepíthető-purple.svg?logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+
+---
+
+## 🌐 Élő Demó (Live Deployment)
+
+A rendszer éles felhőalapú környezetben üzemel, és azonnal kipróbálható az alábbi linkeken:
+
+- **Frontend Webalkalmazás (Vercel):** [https://sio-guide.vercel.app](https://sio-guide.vercel.app)
+- **Backend REST API Szerver (Render):** [https://sioguide-backend.onrender.com](https://sioguide-backend.onrender.com)
+- **Interaktív OpenAPI / Swagger Dokumentáció:** [https://sioguide-backend.onrender.com/docs](https://sioguide-backend.onrender.com/docs)
+- **Rendszer Életjel (Health Check):** [https://sioguide-backend.onrender.com/health](https://sioguide-backend.onrender.com/health)
 
 ---
 
 ## 📖 1. Projekt Áttekintés
 
-A **SioGuide** egy korszerű, **Agentic RAG** (*Retrieval-Augmented Generation* és *Autonomous Function Calling*) architektúrára épülő intelligens webes asszisztens. Célja, hogy a siófoki Müller's vendégházak vendégeinek valós idejű, pontos, helyi információkat és exkluzív kedvezményeket nyújtson:
+A **SioGuide** egy korszerű, **Agentic RAG** (*Retrieval-Augmented Generation* és *Autonomous Tool Calling*) architektúrára épülő intelligens turisztikai és szálláshely-asszisztens, amely a siófoki **Müller's vendégházak** (Fő utca 104-106., Kálmán Imre sétány 9., Fő utca 114.) vendégei, családok és iskolai osztálykirándulások számára nyújt 0-24 órás digitális concierge szolgáltatást.
 
-- **Hiteles Szállás- és Programinformáció:** Részletes adatok a Müller's 3 egységéről, a strandokról, éttermekről, kulturális és wellness lehetőségekről.
-- **Agentic AI & Google Maps Eszközhasználat:** A Gemini 3.8 Flash autonóm módon hívja meg a Google Maps Distance Matrix API-t, hogy valós idejű gyalogos távolságokat, sétaidőket és többállomásos menetterveket kalkuláljon.
-- **Müller's Partnerkedvezmények:** A RAG adatbázisba ágyazott kedvezmények (pl. Pietro Pizzeria 15%, Palace Wellness 20%, Escape60 15%) automatikus beépítése a válaszokba és kiemelése a felületen.
-- **Időjárás- és Napszak-érzékeny Logika:** Élő Open-Meteo időjárási adatok (hőmérséklet, WMO esőkódok) és óra-alapú napszak-szabályok alapján esős napokon beltéri programokat, este pedig vacsorát és szórakozóhelyeket javasol.
-- **Interaktív Forrásmegjelölés & Google Térkép Modal:** A válaszokhoz tartozó forráskártyákra kattintva felugró modális ablakban közvetlenül beágyazott interaktív Google Térkép (Embed API) és kedvezmény-érvényesítési útmutató jelenik meg.
+A rendszer a statikus chatbotokon messze túlmutatva valós idejű, többforrású adatbázis-vektorkeresést, autonóm külső eszközhasználatot (Google Maps Distance Matrix), interaktív kosár-alapú útvonaltervezést, natív böngészős hangfelismerést és mobilra telepíthető PWA élményt ötvöz egyetlen integrált platformban.
 
 ---
 
-## 🏛️ 2. Rendszerarchitektúra és Agentic Adatfolyam
+## 🏛️ 2. Rendszerarchitektúra és Adatfolyam
 
 ```
 +-------------------------------------------------------------------------------------------------+
-|                                         REACT FRONTEND                                          |
-|  - Vite + Tailwind CSS · Egyoldalas Chat Alkalmazás (SPA)                                       |
-|  - Kattintható forráskártyák (SourceCard) animált 🎁 Müller's Kedvezmény badge-ekkel            |
-|  - Interaktív PlaceModal beágyazott Google Maps Embed API-val (iframe)                          |
+|                                    REACT PWA KLIENS (FRONTEND)                                  |
+|  - Progresszív Webalkalmazás (React 19 + Vite 6 + Tailwind CSS · Standalone SPA)               |
+|  - Web Speech API (Hangalapú kérdésfeltevés dinamikus mikrofon-pulzálással)                    |
+|  - Útiterv-Kosár (Trip Cart): Helyszínek interaktív gyűjtése & automatikus prompt Checkout     |
+|  - Kattintható SourceCard kártyák és PlaceModal beágyazott interaktív Google Maps iframe-mel    |
+|  - LocalStorage mentéskezelő és natív Web Share API (navigator.share) azonnali megosztás       |
 +------------------------------------------------+------------------------------------------------+
                                                  |
-                                                 | HTTP POST /ask { question }
+                                                 | HTTP POST /ask { question: string }
                                                  v
 +-------------------------------------------------------------------------------------------------+
-|                                        FASTAPI BACKEND                                          |
+|                                    FASTAPI AGENTIC BACKEND                                      |
 |                                                                                                 |
-|  1. Meteorológiai és Idő Kontextus:                                                             |
-|     --> Open-Meteo REST API (hőmérséklet, WMO kód) + datetime napszak elemzés                   |
+|  1. Környezeti és Meteorológiai Kontextus:                                                      |
+|     --> Open-Meteo REST API (Siófoki élő hőmérséklet & WMO időjáráskód) + Napszak-elemzés      |
 |                                                                                                 |
-|  2. Beágyazás (Embedding):                                                                      |
-|     --> Google Gemini gemini-embedding-001 (768 dimenzió, RETRIEVAL_QUERY)                      |
+|  2. Szemantikus Vektor-beágyazás (Embedding):                                                   |
+|     --> Google GenAI gemini-embedding-001 (768 dimenziós vektorok)                              |
 |                                                                                                 |
-|  3. Vektorkeresés (Retrieval):                                                                  |
-|     --> Supabase pgvector RPC (match_locations) HNSW indexeléssel                               |
-|     --> Helyszínek + discount_info partnerkedvezmények kiolvasása                               |
+|  3. Vektor-hasonlósági Visszakeresés (Retrieval):                                               |
+|     --> Supabase PostgreSQL 17 (pgvector bővítmény + HNSW koszinusz távolság index)             |
+|     --> match_locations tárolt eljárás: Helyszínek, árak, kapcsolat és Müller's kedvezmények   |
 |                                                                                                 |
-|  4. Agentic AI Chat & Function Calling (Generation):                                            |
-|     --> Google Gemini 3.8 Flash (chats.create + automatic_function_calling)                     |
-|     --> Szükség esetén automatikus Google Maps Distance Matrix API hívás                        |
-|         [get_walking_distance(origin, destination)] -> távolság, menetidő, többállomásos tervek |
+|  4. Agentic Chat & Autonóm Eszközhasználat (Tool Calling):                                      |
+|     --> Google Gemini 3.8 / 1.5 Flash modell automatikus Function Calling támogatással          |
+|     --> Tool: get_walking_distance(origin, destination) a Google Maps Distance Matrix API-val  |
+|     --> Többállomásos útiterv szintézis kattintható Google Maps útvonaltervező linkkel         |
 +-------------------------------+-----------------------------------------------+-----------------+
                                 |                                               |
                                 v                                               v
 +-----------------------------------------------+   +---------------------------------------------+
 |                SUPABASE CLOUD                 |   |             KÜLSŐ SZOLGÁLTATÁSOK            |
-|  - PostgreSQL 17 + pgvector                   |   |  - Google Gemini API:                       |
-|  - locations tábla (embedding: vector(768),   |   |      * gemini-embedding-001 (768 dim)       |
-|    discount_info: text)                       |   |      * gemini-3.8-flash (Function Calling)  |
-|  - HNSW koszinusz távolság index              |   |  - Google Maps Distance Matrix API          |
-|  - match_locations() tárolt eljárás           |   |  - Google Maps Embed API (Frontend iframe)  |
-|                                               |   |  - Open-Meteo Weather API (ingyenes)        |
+|  - PostgreSQL 17 + pgvector bővítmény         |   |  - Google Gemini API                        |
+|  - locations tábla (embedding: vector(768))   |   |  - Google Maps Distance Matrix API (Tool)   |
+|  - HNSW vector_cosine_ops index               |   |  - Google Maps Embed API (Frontend Térkép)  |
+|  - match_locations() tárolt eljárás           |   |  - Open-Meteo Weather API                   |
 +-----------------------------------------------+   +---------------------------------------------+
 ```
 
 ---
 
-## 🛠️ 3. Alkalmazott Technológiák és Könyvtárak
+## ✨ 3. Főbb Rendszerfunkciók (Key Features)
 
-| Réteg | Technológia / Szolgáltatás | Szerep a rendszerben |
-|---|---|---|
-| **Adatbázis** | **Supabase (PostgreSQL 17)** | Felhőalapú perzisztencia, RLS biztonsági házirendek |
-| **Vektorkeresés** | **pgvector + HNSW index** | 768 dimenziós gyors és pontos koszinusz-hasonlósági keresés |
-| **Backend Keretrendszer** | **FastAPI (Python 3.11+)** | Aszinkron REST API, OpenAPI/Swagger dokumentációval |
-| **Agentic AI & LLM** | **Google Gemini `gemini-3.8-flash`** | Szövegértés, többállomásos útvonal-tervezés és automatikus Function Calling |
-| **Szövegvektorizálás** | **Google Gemini `gemini-embedding-001`** | 768 dimenzióra optimalizált szemantikus beágyazás |
-| **Távolságmérés Tool** | **Google Maps Distance Matrix API** | Gyalogos távolságok és menetidők lekérdezése Siófokon |
-| **Interaktív Térkép** | **Google Maps Embed API** | Helyszínek beágyazott interaktív térképes megjelenítése |
-| **Időjárás Szolgáltatás** | **Open-Meteo API** | Valós idejű siófoki hőmérséklet és csapadékadatok kulcs nélkül |
-| **Frontend Keretrendszer** | **React 19 + Vite** | Nagy sebességű SPA, modern React Hooks és állapotkezelés |
-| **Design & Stílus** | **Tailwind CSS v3** | Reszponzív, balatoni kék színvilágú modern UI |
+### 1. 🤖 Agentic AI & Autonóm Google Maps Eszközhasználat (Tool Calling)
+- A legújabb `google-genai` SDK-ra épülő **Google Gemini Flash** modellt használja natív **Function Calling** mechanizmussal.
+- Amennyiben a vendég gyalogos távolságról, sétaidőről érdeklődik, vagy a vendégház és a célpontok közötti útvonalat kérdezi, a modell autonóm módon meghívja a háttérben futó `get_walking_distance` Python eszközt a **Google Maps Distance Matrix API**-n keresztül.
+- Komplex, többállomásos menettervek esetén a válasz legvégén szigorúan legenerál egy azonnal kattintható, összefűzött Google Maps útvonaltervező linket:
+  `https://www.google.com/maps/dir/Indulási+cím/1.+állomás+neve+Siófok/2.+állomás+neve+Siófok`
+
+### 2. 🎁 Domén-specifikus RAG & Exkluzív Müller's Kedvezmények
+- **23 gondosan feltöltött siófoki helyszín** (a Müller's 3 vendégháza, strandok, minőségi éttermek, éjszakai klubok, wellness létesítmények, vitorláskikötők, szabadulószobák).
+- A vektorok a **PostgreSQL 17 pgvector** bővítményében tárolódnak, dedikált **HNSW koszinusz-távolság indexeléssel** a gyors és pontos keresésért.
+- A rendszer közvetlenül a RAG kontextusból kiemeli a Müller's szállóvendégeknek járó exkluzív partnerkedvezményeket (10–20% kedvezmény éttermekben, wellness belépőknél és szórakozóhelyeken), és ezeket animált jelvényekkel jeleníti meg.
+- Tájékoztatást ad a valós árfekvésről (*pl. 'Főételek: 3500-6000 Ft'*) és a közvetlen asztalfoglalási telefonszámokról.
+
+### 3. 🛒 Útiterv-Kosár (Trip Cart – Kollaboratív Tervező)
+- A forráskártyákon elhelyezett **`➕ Tervhez`** gomb segítségével a vendégek egyszerűen összeválogathatják a meglátogatni kívánt helyszíneket.
+- **Kétirányú Toggle funkció:** A gomb állapota a kosárba helyezéskor azonnal átvált zöld **`✓ Hozzáadva`** állapotra, egérráhúzáskor (hover) pedig egy feltűnő **`❌ Eltávolítás`** opciót kínál, így a lista egyetlen kattintással módosítható.
+- Kosárba gyűjtött elemek esetén megjelenik egy lebegő **Checkout sáv**:
+  - Mutatja a kiválasztott helyek számát és neveit.
+  - Egyetlen kattintásra (`🗺️ Terv Generálása`) elküldi az optimalizált lekérdezést: *"Szeretnék egy optimalizált programtervet az alábbi helyszínekből: [...]. Kérlek, oszd be logikusan, számolj a sétaidőkkel, és a végén adj egy kattintható Maps linket!"*.
+
+### 4. 💾 Helyi Mentés (LocalStorage) & Natív Web Share API
+- **Intelligens Mentés Gomb:** Csak akkor jelenik meg az AI válaszai alatt, ha a szöveg valós útvonalat vagy programtervet tartalmaz (a rövid válaszoknál és üdvözléseknél rejtve marad).
+- **CustomEvent Állapotszinkronizáció:** Ha a mentett tervek modális ablakában törölnek egy tervet, a rendszer egy `planDeleted` eseményt bocsát ki, azonnal visszaállítva az adott chat üzenet alatti mentés gombot.
+- **Azonnali Megosztás a Chatből:** A mentett tervek és az aktív chat válaszai is egy kattintással megoszthatók a natív mobil megosztó ablakon (`navigator.share`) keresztül (WhatsApp, Messenger, SMS), asztali böngészőben pedig automatikus vágólapra másolási fallbackkel (`✓ Kimásolva!`).
+- Egységesített professzionális fejléc és vízjel formátum:
+  ```text
+  📍 SioGuide Programterv - Siófok:
+  [A generált útiterv szövege és a kattintható Maps link]
+
+  Készült a SioGuide Müller's AI Asszisztenssel.
+  ```
+
+### 5. 🎙️ Hangvezérlés (Web Speech API)
+- Böngésző-natív `window.SpeechRecognition` alapú beszédfelismerés külső fizetős hang API-k nélkül.
+- Automatikusan adaptálódik a felület aktív nyelvéhez (`hu-HU`, `de-DE`, `en-US`).
+- Vizuális visszajelzésként egy pulzáló, piros hullámzó állapotjelző sáv tájékoztat a diktálásról.
+
+### 6. 🌍 Automatikus Nyelvfelismerés (Auto-I18n) & Splash Screen
+- Indításkor a böngésző beállításai alapján a `navigator.language` segítségével azonosítja a nyelvet:
+  - `hu` $\rightarrow$ Magyar
+  - `de` $\rightarrow$ Német
+  - minden más $\rightarrow$ Angol (`en` alapértelmezett)
+- A fejlécben elhelyezett interaktív gyorsváltóval (`HU` | `EN` | `DE`) a teljes szótár és az üdvözlő üzenet azonnal átkapcsolható.
+- **Gombmentes Balatoni Splash Screen:** Letisztult nyitóképernyő a hivatalos SioGuide logóval és nyelvhű alcímmel, amely 1.6 másodperc után finom fade-out animációval automatikusan átadja a helyét a chatnek.
+
+### 7. 📱 Progresszív Webalkalmazás (PWA)
+- A `vite-plugin-pwa` integrációnak köszönhetően mobilra (iOS Safari, Android Chrome) és asztali számítógépre is önálló applikációként telepíthető.
+- Automatikus Service Worker precache gyorsítótárazás (`dist/sw.js`) az azonnali betöltődéshez.
+- Mobil-optimalizált viewport, safe-area alsó térközkezelés és nagyfelbontású saját ikonok (`pwa-192x192.png`, `pwa-512x512.png`).
 
 ---
 
-## 📁 4. Könyvtárstruktúra
+## 🛠️ 4. Alkalmazott Technológiai Stack
+
+| Réteg | Technológia | Szerep és Feladatkör |
+|---|---|---|
+| **Frontend Keretrendszer** | **React 19** + **Vite 6** | Nagy sebességű Single Page Application (SPA), React Hooks alapú állapotkezelés |
+| **Design & Felület** | **Tailwind CSS v3** | Reszponzív, mobil-elsődleges Balaton-kék design paletta |
+| **PWA Motor** | **vite-plugin-pwa** | Service Worker regisztráció, Web App Manifest és offline gyorsítótárazás |
+| **Beszédfelismerés** | **Web Speech API** | Natív böngészős hangalapú diktálás külső könyvtár nélkül |
+| **Backend Keretrendszer** | **FastAPI** + **Uvicorn** | Aszinkron Python REST API, automatikus Pydantic adatvalidációval |
+| **Adatbázis & Vektorkeresés** | **Supabase (PostgreSQL 17)** | Felhőalapú perzisztencia, `pgvector` kiterjesztés és HNSW koszinusz index |
+| **Generatív AI LLM** | **Google Gemini 3.8 / 1.5 Flash** | Szövegértelmezés, többnyelvű válaszadás és autonóm Function Calling |
+| **Szövegbeágyazó Modell** | **Google gemini-embedding-001** | 768 dimenziós szemantikus vektorreprezentáció generálása |
+| **Térkép és Útvonaltervezés** | **Google Maps Platform** | Distance Matrix API (Backend Tool) + Embed API (Frontend modal iframe) |
+| **Időjárás Szolgáltatás** | **Open-Meteo REST API** | Élő siófoki hőmérséklet és csapadékadatok lekérdezése |
+
+---
+
+## 📁 5. Projekt Könyvtárstruktúra
 
 ```
 SioGuide/
-├── .env                        # Központi környezeti változók (DB URI, Gemini és Maps API kulcsok)
-├── .gitignore                  # Git figyelmen kívül hagyási szabályok
+├── .env                        # Központi környezeti változók (API kulcsok, DB elérések)
 ├── DEVELOPMENT_LOG.md          # Fázisonkénti részletes fejlesztési napló
-├── PROJECT_BOARD.md            # Projekt feladatkövető tábla és Roadmap
-├── README.md                   # Részletes egyetemi dokumentáció
+├── PROJECT_BOARD.md            # Projekt feladatkövető tábla és roadmap
+├── README.md                   # Hivatalos egyetemi projekt dokumentáció (ez a fájl)
 │
-├── backend/                    # FastAPI Backend alkalmazás
+├── backend/                    # FastAPI Backend Alkalmazás
 │   ├── config.py               # Pydantic Settings konfigurációkezelő (.env betöltése)
-│   ├── main.py                 # FastAPI szerver, Google Maps Tool és Agentic RAG pipeline
-│   ├── requirements.txt        # Python függőségek listája
-│   ├── seed.py                 # 17 siófoki helyszínt és kedvezményeket feltöltő szkript
-│   └── test_rpc.py             # Izolált pgvector és RPC integrációs tesztszkript
+│   ├── main.py                 # FastAPI szerver, Agentic RAG pipeline & Google Maps tool
+│   ├── requirements.txt        # Python backend függőségek listája
+│   ├── seed.py                 # 23 siófoki helyszínt, árat és kedvezményt feltöltő szkript
+│   └── test_rpc.py             # Izolált pgvector RPC integrációs tesztszkript
 │
-└── frontend/                   # React Frontend alkalmazás (Vite)
-    ├── .env                    # Frontend környezeti változók (VITE_API_URL, Maps API key)
-    ├── index.html              # HTML belépési pont
-    ├── package.json            # Node.js függőségek és scriptek
-    ├── tailwind.config.js      # Egyedi balatoni színpaletta konfiguráció
-    ├── vite.config.js          # Vite build beállítások
-    └── src/
-        ├── App.jsx             # Fő Chat felület, állapotkezelés és Modal renderelés
-        ├── main.jsx            # React root inicializálás
-        ├── index.css           # Globális Tailwind direktívák és animációk
+└── frontend/                   # React PWA Frontend Alkalmazás
+    ├── index.html              # HTML belépési pont mobil PWA meta tagekkel
+    ├── package.json            # Node.js függőségek (React, Vite, PWA plugin)
+    ├── vite.config.js          # Vite konfiguráció VitePWA pluginnal és web manifesttel
+    ├── tailwind.config.js      # Tailwind CSS konfiguráció a custom lake színpalettával
+    │
+    ├── public/                 # Statikus média és ikonok
+    │   ├── pwa-192x192.png     # Hivatalos SioGuide PWA alkalmazásikon
+    │   └── pwa-512x512.png     # Nagy felbontású Splash és Store ikon
+    │
+    └── src/                    # React Forráskód
+        ├── main.jsx            # Alkalmazás belépési pont
+        ├── App.jsx             # Fő vezérlő (Chat ciklus, Trip Cart, I18n, Splash)
+        ├── index.css           # Globális stílusok és egyedi kulcsképkocka-animációk
+        │
         └── components/
-            ├── ChatMessage.jsx # Felhasználói és asszisztens buborékok markdown formázással
-            ├── LoadingDots.jsx # Aszinkron várakozási animáció
-            ├── PlaceModal.jsx  # Felugró modal Google Maps Embed térképpel és kedvezményekkel
-            └── SourceCard.jsx  # Kattintható forráskártyák 🎁 Müller's Kedvezmény badge-dzsel
+            ├── ChatMessage.jsx     # Chat buborékok, markdown link parser, intelligens mentés/megosztás
+            ├── SourceCard.jsx      # Interaktív helyszínkártyák kétirányú Trip Cart toggle gombbal
+            ├── PlaceModal.jsx      # Felugró adatlap beágyazott interaktív Google Térképpel és kedvezménnyel
+            ├── SavedPlansModal.jsx # Mentett tervek kezelője és Web Share API integráció
+            └── LoadingDots.jsx     # Pattogó pontok gondolkodási animáció
 ```
 
 ---
 
-## 🗄️ 5. Adatbázis Séma és Tárolt Eljárás (Supabase DDL)
+## 🚀 6. Telepítés és Helyi Futtatás (Getting Started)
 
-A `locations` tábla tárolja a helyszíneket, a 768 dimenziós beágyazásokat és a partnerkedvezményeket:
-
-```sql
--- 1. pgvector kiterjesztés aktiválása
-CREATE EXTENSION IF NOT EXISTS vector;
-
--- 2. locations tábla létrehozása
-CREATE TABLE IF NOT EXISTS public.locations (
-  id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name          text        NOT NULL,
-  description   text        NOT NULL,
-  category      text        NOT NULL,
-  discount_info text        DEFAULT NULL,
-  embedding     vector(768),
-  created_at    timestamptz NOT NULL DEFAULT now()
-);
-
--- 3. HNSW vektorindex létrehozása (garantálja a gyors és pontos koszinusz keresést)
-CREATE INDEX IF NOT EXISTS locations_embedding_hnsw_idx 
-  ON public.locations 
-  USING hnsw (embedding vector_cosine_ops);
-
--- 4. RLS és olvasási jogosultság
-ALTER TABLE public.locations ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "public read locations"
-  ON public.locations FOR SELECT
-  TO anon, authenticated
-  USING (true);
-
--- 5. match_locations tárolt eljárás (RPC)
-CREATE OR REPLACE FUNCTION public.match_locations(
-  query_embedding vector,
-  match_threshold double precision DEFAULT 0.3,
-  match_count     integer          DEFAULT 5
-)
-RETURNS TABLE (
-  id            bigint,
-  name          text,
-  description   text,
-  category      text,
-  discount_info text,
-  similarity    double precision
-)
-LANGUAGE sql
-STABLE
-SECURITY INVOKER
-SET search_path = public
-AS $$
-  SELECT
-    l.id,
-    l.name,
-    l.description,
-    l.category,
-    l.discount_info,
-    1 - (l.embedding <=> query_embedding) AS similarity
-  FROM locations l
-  WHERE 1 - (l.embedding <=> query_embedding) >= match_threshold
-  ORDER BY l.embedding <=> query_embedding
-  LIMIT match_count;
-$$;
-```
+### 1. Előfeltételek
+- **Node.js** (v18 vagy újabb) és **npm**
+- **Python** (3.11 vagy újabb) és `pip`
+- Egy ingyenes **Supabase** projekt engedélyezett `pgvector` kiterjesztéssel
+- **Google Gemini API** kulcs ([Google AI Studio](https://aistudio.google.com/))
+- **Google Maps Platform API** kulcs engedélyezett *Distance Matrix API* és *Maps Embed API* szolgáltatásokkal
 
 ---
 
-## ⚙️ 6. Környezeti Változók és Beállítás
+### 2. Környezeti Változók Konfigurációja
 
-A rendszer működéséhez két külön `.env` konfiguráció szükséges:
-
-### 1. Központi `.env` (a projekt gyökérkönyvtárában):
+Hozz létre egy `.env` fájlt a projekt gyökérkönyvtárában:
 ```env
-# Supabase hitelesítés
-SUPABASE_URL=https://<your-project-ref>.supabase.co
-SUPABASE_SERVICE_KEY=<your-supabase-service-role-key>
+# Supabase Konfiguráció
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_SERVICE_KEY=your-supabase-service-role-or-anon-key
 
-# Google Gemini API (Beágyazások és Chat LLM)
-GEMINI_API_KEY=AIzaSy...
+# Google AI Studio API Kulcs
+GEMINI_API_KEY=your-gemini-api-key
 
-# Google Maps API (Distance Matrix API a backend tool calling-hoz)
-GOOGLE_MAPS_API_KEY=AIzaSy...
+# Google Maps API Kulcs (Backend Distance Matrix Tool)
+GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 ```
 
-### 2. Frontend `.env` (`frontend/.env`):
+Hozz létre egy `frontend/.env` fájlt:
 ```env
-# Backend API elérési út
+# Backend API Alap URL
 VITE_API_URL=http://localhost:8000
 
-# Google Maps Embed API kulcs az interaktív iframe megjelenítéséhez
-VITE_GOOGLE_MAPS_API_KEY=AIzaSy...
+# Google Maps API Kulcs a Frontend Beágyazott Térképhez
+VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 ```
 
 ---
 
-## 🚀 7. Telepítési és Indítási Útmutató
+### 3. Adatbázis Inicializálás és Seedelés
 
-### 1. Backend elindítása
+1. A Supabase felületén (SQL Editor) futtasd le a pgvector sémát és az indexet:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS vector;
+
+   CREATE TABLE IF NOT EXISTS public.locations (
+       id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+       name text NOT NULL,
+       description text NOT NULL,
+       category text NOT NULL,
+       discount_info text DEFAULT NULL,
+       embedding vector(768) NOT NULL,
+       created_at timestamp with time zone DEFAULT now() NOT NULL
+   );
+
+   CREATE INDEX IF NOT EXISTS locations_embedding_hnsw_idx 
+   ON public.locations USING hnsw (embedding vector_cosine_ops);
+   ```
+
+2. Hozd létre a koszinusz-hasonlósági vektorkereső tárolt eljárást (`match_locations`):
+   ```sql
+   CREATE OR REPLACE FUNCTION public.match_locations(
+       query_embedding vector(768),
+       match_threshold double precision,
+       match_count integer
+   )
+   RETURNS TABLE(
+       id bigint,
+       name text,
+       description text,
+       category text,
+       discount_info text,
+       similarity double precision
+   )
+   LANGUAGE sql STABLE
+   AS $$
+       SELECT
+           id,
+           name,
+           description,
+           category,
+           discount_info,
+           1 - (locations.embedding <=> query_embedding) AS similarity
+       FROM locations
+       WHERE 1 - (locations.embedding <=> query_embedding) > match_threshold
+       ORDER BY similarity DESC
+       LIMIT match_count;
+   $$;
+   ```
+
+3. Töltsd fel a 23 siófoki helyszínt és a partnerkedvezményeket az adatbázisba:
+   ```bash
+   # Virtuális környezet létrehozása és aktiválása
+   python3 -m venv venv
+   source venv/bin/activate
+
+   # Függőségek telepítése
+   pip install -r backend/requirements.txt
+
+   # Seed futtatása
+   python backend/seed.py
+   ```
+
+---
+
+### 4. Backend Indítása
+
+Indítsd el a FastAPI szervert fejlesztői módban (hot-reload):
 ```bash
-# Virtuális környezet aktiválása
-python3 -m venv venv
-source venv/bin/activate       # macOS / Linux
-# venv\Scripts\activate        # Windows
-
-# Függőségek telepítése
-cd backend
-pip install -r requirements.txt
-
-# Adatbázis feltöltése 17 siófoki helyszínnel és kedvezményekkel
-python seed.py
-
-# FastAPI szerver indítása
-uvicorn main:app --reload --port 8000
+source venv/bin/activate
+fastapi dev backend/main.py
+# Vagy uvicorn használatával közvetlenül:
+# uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
-- **Backend API:** `http://localhost:8000`
-- **Interaktív Swagger UI:** `http://localhost:8000/docs`
-- **Health Check:** `http://localhost:8000/health`
+- API Életjel Ellenőrzés: [http://localhost:8000/health](http://localhost:8000/health)
+- Interaktív Swagger Dokumentáció: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-### 2. Frontend elindítása
+---
+
+### 5. Frontend Indítása és PWA Tesztelés
+
 Egy külön terminálablakban:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-- **Webes felület:** `http://localhost:5173`
+Nyisd meg a böngészőt a [http://localhost:5173](http://localhost:5173) címen.
+
+A végleges PWA Service Worker és telepíthetőség tesztelése:
+```bash
+cd frontend
+npm run build
+npm run preview
+```
+- **Google Chrome / Edge (Desktop):** Kattints a címsor jobb szélén megjelenő **"SioGuide telepítése"** ikonra.
+- **iOS Safari:** Érintsd meg a **Megosztás $\rightarrow$ Főképernyőhöz adás** gombot.
+- **Android Chrome:** Fogadd el a képernyő alján felugró **"Hozzáadás a kezdőképernyőhöz"** értesítést.
 
 ---
 
-## 💡 8. Agentic Funkciók és Üzleti Logika
+## 🗺️ 7. Továbbfejlesztési Ütemterv (Roadmap v2.0)
 
-### 🧠 1. Autonóm Google Maps Function Calling
-A backend a Google GenAI legfrissebb Chat API-ját használja (`automatic_function_calling=True`). Amikor a vendég távolságra, menetidőre vagy többállomásos útitervre kérdez rá:
-1. A Gemini felismeri a szándékot, és autonóm módon meghívja a `get_walking_distance(origin, destination)` Python eszközt.
-2. A függvény a Google Maps Distance Matrix API-n keresztül kiszámolja a valós siófoki gyalogos távolságot és menetidőt.
-3. A nyelvi modell az eredményt természetes magyar szövegben formázva építi be a válaszba.
-
-### 🎁 2. RAG-ba Ágyazott Müller's Partnerkedvezmények
-A `seed.py` a beágyazás során a kedvezmények szövegét is vektorizálja. Ha a vendég akciókra, olcsóbb étkezésre vagy wellnessre kérdez, a rendszer automatikusan a partnerhelyeket hozza fel elsőként:
-- 🍕 **Pietro Ristorante & Pizzeria:** 15% kedvezmény minden pizzára és tésztára szobakulccsal.
-- 💆 **Palace Wellness & Spa:** 20% kedvezmény az egész napos wellness belépőből és ingyenes szauna.
-- 🍔 **Renegát Pub & Burger:** Ajándék kézműves szörp vagy pohár sör minden burger menühöz.
-- 🧩 **Escape60 Szabadulószoba:** 15% csoportos kedvezmény osztálykirándulóknak és Müller's vendégeknek.
-- 🏄 **Siófoki Vízisport Centrum:** 1 óra SUP/vízibicikli bérlés mellé +30 perc ajándék.
-- 🎉 **Flört Club:** Éjfélig ingyenes belépés vendégkártyával.
-
-### 🗺️ 3. Interaktív PlaceModal és Térkép Iframe
-A chat alatt listázott forráskártyákra kattintva egy Tailwind-del formázott modális ablak ugrik fel:
-- Részletes leírás és százalékos egyezés.
-- Kiemelt arany doboz a kedvezmény pontos beváltási instrukciójával.
-- Helyszínre fókuszált **interaktív Google Térkép iframe** (Embed API).
-- Közvetlen *"Útvonaltervezés"* gomb, amely a natív Google Térképre navigál.
+- [ ] **Valós idejű BAHART hajómenetrend:** A siófoki személyhajó- és kompmenetrendek élő lekérdezése a Balaton teljes vonalán.
+- [ ] **PMS Rendszer Integráció:** Kétirányú szinkronizáció szállodai menedzsment rendszerekkel a digitális szobakulcs és szobaszám alapú automatikus kedvezmény-érvényesítéshez.
+- [ ] **Balatoni Viharjelzés Push Értesítések:** Az Országos Meteorológiai Szolgálat (OMSZ) hivatalos balatoni viharjelzéseinek automatikus továbbítása PWA push értesítésként a parton tartózkodó vendégeknek.
 
 ---
 
-## 🔮 9. Fázis 6: Továbbfejlesztési Roadmap (Ötlettár)
+## 📄 8. Licenc és Szerzőség (Academic Attribution)
 
-A projekt jelenleg stabil Béta állapotban van. A jövőbeli fejlesztési irányok:
-
-- [ ] **Fázis 6.1: Élő BAHART hajómenetrend integráció** – A siófoki kikötő menetrendszerű járatainak dinamikus lekérdezése (Balatonfüred, Tihany).
-- [ ] **Fázis 6.2: Többnyelvű asszisztens (HU / EN / DE)** – Külföldi turisták és diákok kiszolgálása automatikus nyelvfelismeréssel.
-- [ ] **Fázis 6.3: Hangalapú asszisztens (Voice AI)** – Web Speech API / Whisper alapú beszédbevitel és hangos felolvasás a kényelmes strandolás közbeni használathoz.
-- [ ] **Fázis 6.4: Müller's Szobafoglalási és Reggeli űrlap** – Közvetlen foglalási igények és reggeli-rendelések leadása a chaten keresztül.
-- [ ] **Fázis 6.5: Offline PWA támogatás** – Mobilra telepíthető webalkalmazás helyi gyorsítótárral hálózati kimaradás esetére.
+Készült a siófoki **Müller's Vendégházak** megbízásából, egyetemi szoftverfejlesztési és mesterséges intelligencia záróprojektként.  
+Minden jog fenntartva © 2026.

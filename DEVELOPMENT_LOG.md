@@ -426,6 +426,50 @@ Felhasználói kérdés
     - Egérráhúzáskor (hover): Átvált `❌ Eltávolítás` szövegre és finom pirosas (`hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300`) árnyalatra.
     - Kattintáskor azonnal kiveszi a helyszínt a kosárból anélkül, hogy a részletek modál felugrana.
 
+---
+
+## Fázis 7 – Projekt Dokumentáció és Hivatalos Lezárás 🚀
+
+### 7.1 – Angol Nyelvű Hivatalos README.md & Rendszer-Dokumentáció
+
+**Dátum:** 2026-11-13
+
+- `README.md`:
+  - Teljes körű, professzionális angol nyelvű projekt dokumentáció létrehozva.
+  - **Title & Overview:** SioGuide – Müller's AI Concierge.
+  - **Részletes Rendszerarchitektúra és Adatfolyam:** React PWA, FastAPI, Open-Meteo, Gemini 3.8/1.5 Flash (Function Calling), Google Maps Distance Matrix API és Supabase pgvector HNSW koszinusz hasonlósági adatfolyam.
+  - **Kiemelt Fő Funkciók (Key Features):**
+    1. Agentic AI & Autonomous Google Maps Tool Calling (`get_walking_distance`, többállomásos útvonalak és linkek).
+    2. Domain RAG & Müller's Partnerkedvezmények (23 siófoki pont, árak, elérhetőségek, kiemelt kedvezmények).
+    3. Trip Cart (Kollaboratív útiterv-kosár, dinamikus kétirányú toggle, lebegő Checkout sáv és automatikus prompt generálás).
+    4. LocalStorage & Natív Web Share API (Intelligens mentés szűrés, `planDeleted` eseményszinkronizáció, azonnali megosztás és vágólap fallback).
+    5. Voice Control (Web Speech API többnyelvű diktálás és animált visszajelzés).
+    6. Auto-I18n & Splash Screen (Automatikus `navigator.language` felismerés, élő nyelvválasztó, gombmentes Balatoni splash screen).
+    7. Progressive Web App (PWA) (Telepíthető standalone mód, offline service worker, egyedi arculat).
+  - **Tech Stack & Könyvtárstruktúra:** Részletes táblázatos technológiai és fájlfa bemutatás.
+  - **Getting Started:** Lépésről-lépésre lokális telepítési és indítási útmutató (`.env`, adatbázis sémák, `seed.py`, `fastapi dev backend/main.py`, `npm run dev`, `npm run build`).
+  - **Roadmap:** v2.0 távlati tervek rögzítve.
+- `PROJECT_BOARD.md`:
+  - Fázis 7 lezárva, a projekt hivatalosan készen áll az egyetemi leadásra és az éles használatra.
+
+---
+
+### 7.2 – README Magyarítása és Élő Linkek Beillesztése
+
+**Dátum:** 2026-11-14
+
+- `README.md`:
+  - A teljes dokumentáció lefordítva egyetemi szintű, szabatos és szakmailag hiteles magyar nyelvre.
+  - A szakmai kifejezések (Agentic RAG, PWA, LocalStorage, Web Share API, Checkout, HNSW index, Function Calling) szervesen beépítve a szövegbe.
+  - Az ASCII architektúra ábra, kódblokkok, táblázatok és emojik megőrizve és feliratuk magyarítva.
+  - **Élő Demó (Live Deployment) szekció:** Kiemelt helyen beillesztve a valós, kattintható éles linkek:
+    - Frontend Live URL: [https://sio-guide.vercel.app](https://sio-guide.vercel.app)
+    - Backend API URL: [https://sioguide-backend.onrender.com](https://sioguide-backend.onrender.com)
+    - OpenAPI / Swagger Docs: [https://sioguide-backend.onrender.com/docs](https://sioguide-backend.onrender.com/docs)
+    - Health Check: [https://sioguide-backend.onrender.com/health](https://sioguide-backend.onrender.com/health)
+
+
+
 
 
 
